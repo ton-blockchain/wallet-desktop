@@ -1,0 +1,5 @@
+<(src_loc)/core/main.cpp
+<(src_loc)/core/qt_static_plugins.cpp
+
+platforms: win
+<(res_loc)/win/Wallet.rc

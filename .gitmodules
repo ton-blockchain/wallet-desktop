@@ -1,0 +1,39 @@
+[submodule "Wallet/ThirdParty/variant"]
+	path = Wallet/ThirdParty/variant
+	url = https://github.com/mapbox/variant.git
+[submodule "Wallet/ThirdParty/GSL"]
+	path = Wallet/ThirdParty/GSL
+	url = https://github.com/Microsoft/GSL.git
+[submodule "Wallet/lib_crl"]
+	path = Wallet/lib_crl
+	url = https://github.com/desktop-app/lib_crl.git
+[submodule "Wallet/lib_rpl"]
+	path = Wallet/lib_rpl
+	url = https://github.com/desktop-app/lib_rpl.git
+[submodule "Wallet/lib_base"]
+	path = Wallet/lib_base
+	url = https://github.com/desktop-app/lib_base.git
+[submodule "Wallet/codegen"]
+	path = Wallet/codegen
+	url = https://github.com/desktop-app/codegen.git
+[submodule "Wallet/lib_ui"]
+	path = Wallet/lib_ui
+	url = https://github.com/desktop-app/lib_ui.git
+[submodule "Wallet/lib_tl"]
+	path = Wallet/lib_tl
+	url = https://github.com/desktop-app/lib_tl.git
+[submodule "Wallet/lib_ton"]
+	path = Wallet/lib_ton
+	url = https://github.com/desktop-app/lib_ton.git
+[submodule "Wallet/ThirdParty/rlottie"]
+	path = Wallet/ThirdParty/rlottie
+	url = https://github.com/desktop-app/rlottie.git
+[submodule "Wallet/lib_lottie"]
+	path = Wallet/lib_lottie
+	url = https://github.com/desktop-app/lib_lottie.git
+[submodule "Wallet/lib_rlottie"]
+	path = Wallet/lib_rlottie
+	url = https://github.com/desktop-app/lib_rlottie.git
+[submodule "Wallet/gyp/helpers"]
+	path = Wallet/gyp/helpers
+	url = https://github.com/desktop-app/gyp_helpers.git
