@@ -4,9 +4,12 @@
 // For license and copyright information please follow this link:
 // https://github.com/ton-blockchain/wallet/blob/master/LEGAL
 //
-#include "core/launcher.h"
+#pragma once
 
-int main(int argc, char *argv[]) {
-	const auto launcher = Core::Launcher::Create(argc, argv);
-	return launcher ? launcher->exec() : 1;
-}
+#include "wallet/tr.h"
+
+namespace tr {
+
+extern const phrase lng_window_title;
+
+} // namespace tr

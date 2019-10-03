@@ -14,7 +14,7 @@
       'src_loc': '../SourceFiles',
       'res_loc': '../Resources',
       'style_files': [
-        #'<(src_loc)/wallet/wallet.style',
+        '<(src_loc)/wallet/wallet.style',
       ],
       'dependent_style_files': [
         '<(submodules_loc)/lib_ui/ui/colors.palette',
