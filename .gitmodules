@@ -37,3 +37,9 @@
 [submodule "Wallet/gyp/helpers"]
 	path = Wallet/gyp/helpers
 	url = https://github.com/desktop-app/gyp_helpers.git
+[submodule "Wallet/ThirdParty/xxHash"]
+	path = Wallet/ThirdParty/xxHash
+	url = https://github.com/Cyan4973/xxHash.git
+[submodule "Wallet/lib_storage"]
+	path = Wallet/lib_storage
+	url = https://github.com/desktop-app/lib_storage.git

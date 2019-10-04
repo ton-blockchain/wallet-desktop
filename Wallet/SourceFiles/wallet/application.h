@@ -13,11 +13,15 @@ namespace Ui {
 class Window;
 } // namespace Ui
 
+namespace Ton {
+class Wallet;
+} // namespace Ton
+
 namespace Wallet {
 
 class Application final {
 public:
-	Application();
+	explicit Application(const QString &path);
 	Application(const Application &other) = delete;
 	Application &operator=(const Application &other) = delete;
 	~Application();
@@ -29,9 +33,11 @@ private:
 	void updateWindowPalette();
 	void handleWindowEvent(not_null<QEvent*> e);
 	void handleWindowKeyPress(not_null<QKeyEvent*> e);
+	void openWallet();
 
+	const QString _path;
+	const std::unique_ptr<Ton::Wallet> _wallet;
 	const std::unique_ptr<Ui::Window> _window;
-
 	rpl::lifetime _lifetime;
 
 };
