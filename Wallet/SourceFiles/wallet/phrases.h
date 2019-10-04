@@ -6,10 +6,15 @@
 //
 #pragma once
 
-#include "wallet/tr.h"
+#include "ui/ph.h"
 
 namespace tr {
 
-extern const phrase lng_window_title;
+using now_t = ph::now_t;
+inline constexpr auto now = ph::now;
+
+using phrase = ph::phrase;
+
+extern phrase lng_window_title;
 
 } // namespace tr

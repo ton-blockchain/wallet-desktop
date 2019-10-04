@@ -45,6 +45,7 @@
       '<(submodules_loc)/lib_base/lib_base.gyp:lib_base',
       '<(submodules_loc)/lib_ton/lib_ton.gyp:lib_ton',
       '<(submodules_loc)/lib_ui/lib_ui.gyp:lib_ui',
+      '<(submodules_loc)/lib_wallet/lib_wallet.gyp:lib_wallet',
     ],
 
     'defines': [

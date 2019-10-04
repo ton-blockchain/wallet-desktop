@@ -10,7 +10,6 @@
 <(src_loc)/wallet/application.h
 <(src_loc)/wallet/phrases.cpp
 <(src_loc)/wallet/phrases.h
-<(src_loc)/wallet/tr.h
 
 platforms: win
 <(res_loc)/win/Wallet.rc

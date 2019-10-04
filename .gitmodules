@@ -43,3 +43,9 @@
 [submodule "Wallet/lib_storage"]
 	path = Wallet/lib_storage
 	url = https://github.com/desktop-app/lib_storage.git
+[submodule "Wallet/lib_wallet"]
+	path = Wallet/lib_wallet
+	url = https://github.com/desktop-app/lib_wallet.git
+[submodule "Wallet/ThirdParty/expected"]
+	path = Wallet/ThirdParty/expected
+	url = https://github.com/TartanLlama/expected

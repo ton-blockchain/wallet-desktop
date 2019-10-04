@@ -8,6 +8,6 @@
 
 namespace tr {
 
-const phrase lng_window_title = { "TON Desktop Wallet" };
+phrase lng_window_title = "TON Desktop Wallet";
 
 } // namespace tr

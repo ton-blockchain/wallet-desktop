@@ -9,10 +9,3 @@ using "ui/widgets/widgets.style";
 
 windowSize: size(665px, 488px);
 windowSizeMin: size(480px, 480px);
-
-scrollArea: ScrollArea(defaultScrollArea) {
-	round: 3px;
-	width: 12px;
-	topsh: 0px;
-	bottomsh: 0px;
-}

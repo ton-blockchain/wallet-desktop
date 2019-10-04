@@ -14,13 +14,15 @@
 #include "core/sandbox.h"
 #include "base/platform/base_platform_info.h"
 #include "base/call_delayed.h"
-#include "styles/style_wallet.h"
+#include "styles/style_wrapper.h"
 #include "styles/style_widgets.h"
 #include "styles/palette.h"
 
 #include "ui/layers/generic_box.h"
 #include "ui/layers/layer_manager.h"
 #include "ui/widgets/labels.h"
+#include "wallet/wallet_intro.h"
+#include "wallet/wallet_phrases.h"
 #include "styles/style_layers.h"
 
 #include <QtCore/QStandardPaths>
@@ -36,7 +38,8 @@ namespace Wallet {
 Application::Application(const QString &path)
 : _path(path)
 , _wallet(std::make_unique<Ton::Wallet>(_path))
-, _window(std::make_unique<Ui::Window>()) {
+, _window(std::make_unique<Ui::Window>())
+, _layers(std::make_unique<Ui::LayerManager>(_window->body())) {
 	QApplication::setWindowIcon(QIcon(QPixmap(":/gui/art/logo.png", "PNG")));
 	initWindow();
 }
@@ -51,21 +54,75 @@ void Application::run() {
 }
 
 void Application::openWallet() {
-	const auto error = _wallet->open(QByteArray());
-	if (!error) {
-		return;
-	}
-	const auto text = (error.type == Ton::Wallet::OpenError::Type::IO)
-		? "IO error at path: " + error.path
-		: ("Global Password didn't work.\n\nTry deleting all data at "
-			+ _path);
-	_window->lifetime().make_state<Ui::LayerManager>(
-		_window->body()
-	)->showBox(Box([=](not_null<Ui::GenericBox*> box) {
+	_wallet->open(QByteArray(), crl::guard(this, [=](Ton::Result<> result) {
+		if (result) {
+			if (_wallet->publicKeys().empty()) {
+				showIntro();
+			} else {
+				showWallet();
+			}
+			return;
+		}
+		const auto text = (result.error().type == Ton::Error::Type::IO)
+			? "IO error at path: " + result.error().details
+			: ("Global Password didn't work.\n\nTry deleting all data at "
+				+ _path);
+		_layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
+			box->setCloseByEscape(false);
+			box->setCloseByOutsideClick(false);
+			box->setTitle(rpl::single(QString("Error")));
+			box->addRow(object_ptr<Ui::FlatLabel>(box, text, st::boxLabel));
+			box->addButton(rpl::single(QString("Quit")), [] {
+				QApplication::quit();
+			});
+		}));
+	}));
+}
+
+void Application::showIntro() {
+	_intro = std::make_unique<Intro>(
+		_window->body(),
+		Intro::Mode::Standalone);
+
+	_layers->raise();
+	_layers->hideAll();
+
+	_window->body()->sizeValue(
+	) | rpl::start_with_next([=](QSize size) {
+		_intro->setGeometry({ QPoint(), size });
+	}, _intro->lifetime());
+
+	_intro->actionRequests(
+	) | rpl::start_with_next([=](Intro::Action action) {
+		switch (action) {
+		case Intro::Action::CreateWallet: {
+			_wallet->createKey(crl::guard(this, [=](Ton::Result<std::vector<QString>>) {
+				_wallet->saveKey("testingpass", crl::guard(this, [=](Ton::Result<QByteArray>) {
+					showWallet();
+				}));
+			}));
+		} break;
+		}
+	}, _intro->lifetime());
+}
+
+void Application::showWallet() {
+	Expects(!_wallet->publicKeys().empty());
+
+	_intro = nullptr;
+
+	const auto text = "YOUR KEY: "
+		+ QString::fromLatin1(_wallet->publicKeys().front());
+	_layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
 		box->setCloseByEscape(false);
 		box->setCloseByOutsideClick(false);
-		box->setTitle(rpl::single(QString("Error")));
+		box->setTitle(rpl::single(QString("Wallet")));
 		box->addRow(object_ptr<Ui::FlatLabel>(box, text, st::boxLabel));
+		box->addButton(rpl::single(QString("Delete")), [=] {
+			_wallet->deleteKey(_wallet->publicKeys().front(), [=](auto) {
+				showIntro();
+			});
+		});
 		box->addButton(rpl::single(QString("Quit")), [] {
 			QApplication::quit();
 		});
@@ -73,7 +130,7 @@ void Application::openWallet() {
 }
 
 void Application::initWindow() {
-	_window->setTitle(tr::lng_window_title(tr::now));
+	_window->setTitle(::tr::lng_window_title(::tr::now));
 	_window->setSizeMin(st::windowSizeMin);
 	_window->setGeometry(style::centerrect(
 		QApplication::desktop()->geometry(),
