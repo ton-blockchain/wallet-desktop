@@ -41,9 +41,12 @@ private:
 	void handleWindowEvent(not_null<QEvent*> e);
 	void handleWindowKeyPress(not_null<QKeyEvent*> e);
 	void openWallet();
-	void sendGrams();
 	void showIntro();
+	void saveKey(const std::vector<QString> &words);
 	void showInfo();
+	void sendGrams();
+	void changePassword();
+	void logout();
 
 	const QString _path;
 	const std::unique_ptr<Ton::Wallet> _wallet;

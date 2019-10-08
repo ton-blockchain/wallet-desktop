@@ -101,14 +101,65 @@ void Application::showIntro() {
 	) | rpl::start_with_next([=](Intro::Action action) {
 		switch (action) {
 		case Intro::Action::CreateWallet: {
-			_wallet->createKey([=](Ton::Result<std::vector<QString>>) {
-				_wallet->saveKey("testingpass", [=](Ton::Result<QByteArray>) {
-					showInfo();
-				});
+			_wallet->createKey([=](
+					Ton::Result<std::vector<QString>> result) {
+				if (result) {
+					saveKey(*result);
+				}
 			});
 		} break;
 		}
 	}, _intro->lifetime());
+}
+
+void Application::saveKey(const std::vector<QString> &words) {
+	_layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
+		box->setTitle(rpl::single(QString("Words")));
+		for (const auto &word : words) {
+			box->addRow(object_ptr<Ui::FlatLabel>(
+				box,
+				rpl::single(word),
+				st::boxLabel));
+		}
+		const auto passwordWrap = box->addRow(object_ptr<Ui::RpWidget>(box));
+		const auto password = Ui::CreateChild<Ui::PasswordInput>(
+			passwordWrap,
+			st::defaultInputField,
+			rpl::single(QString("Password")));
+		passwordWrap->widthValue(
+		) | rpl::start_with_next([=](int width) {
+			password->resize(width, password->height());
+		}, password->lifetime());
+		password->heightValue(
+		) | rpl::start_with_next([=](int height) {
+			passwordWrap->resize(passwordWrap->width(), height);
+		}, password->lifetime());
+		password->move(0, 0);
+		const auto saving = box->lifetime().make_state<bool>(false);
+		box->setCloseByEscape(false);
+		box->setCloseByOutsideClick(false);
+		box->addButton(rpl::single(QString("Save")), [=] {
+			if (*saving) {
+				return;
+			}
+			auto pwd = password->getLastText().trimmed();
+			if (pwd.isEmpty()) {
+				password->showError();
+				return;
+			}
+			*saving = true;
+			_wallet->saveKey(pwd.toUtf8(), [=](Ton::Result<QByteArray> r) {
+				*saving = false;
+				if (r) {
+					box->closeBox();
+					showInfo();
+				} else {
+					password->showError();
+					return;
+				}
+			});
+		});
+	}));
 }
 
 void Application::showInfo() {
@@ -155,6 +206,8 @@ void Application::showInfo() {
 		switch (action) {
 		case Info::Action::Refresh: refresh(); break;
 		case Info::Action::Send: sendGrams(); break;
+		case Info::Action::ChangePassword: changePassword(); break;
+		case Info::Action::LogOut: logout(); break;
 		}
 	}, _info->lifetime());
 
@@ -234,6 +287,79 @@ void Application::sendGrams() {
 			box->closeBox();
 		});
 	}));
+}
+
+void Application::changePassword() {
+	_layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
+		box->setTitle(rpl::single(QString("Change password")));
+		const auto oldWrap = box->addRow(object_ptr<Ui::RpWidget>(box));
+		const auto old = Ui::CreateChild<Ui::PasswordInput>(
+			oldWrap,
+			st::defaultInputField,
+			rpl::single(QString("Old password")));
+		oldWrap->widthValue(
+		) | rpl::start_with_next([=](int width) {
+			old->resize(width, old->height());
+		}, old->lifetime());
+		old->heightValue(
+		) | rpl::start_with_next([=](int height) {
+			oldWrap->resize(oldWrap->width(), height);
+		}, old->lifetime());
+		old->move(0, 0);
+		const auto passwordWrap = box->addRow(object_ptr<Ui::RpWidget>(box));
+		const auto password = Ui::CreateChild<Ui::PasswordInput>(
+			passwordWrap,
+			st::defaultInputField,
+			rpl::single(QString("New password")));
+		passwordWrap->widthValue(
+		) | rpl::start_with_next([=](int width) {
+			password->resize(width, password->height());
+		}, password->lifetime());
+		password->heightValue(
+		) | rpl::start_with_next([=](int height) {
+			passwordWrap->resize(passwordWrap->width(), height);
+		}, password->lifetime());
+		password->move(0, 0);
+		const auto saving = box->lifetime().make_state<bool>(false);
+		box->addButton(rpl::single(QString("Change")), [=] {
+			if (*saving) {
+				return;
+			}
+			auto from = old->getLastText().trimmed();
+			if (from.isEmpty()) {
+				old->showError();
+				return;
+			}
+			auto pwd = password->getLastText().trimmed();
+			if (pwd.isEmpty()) {
+				password->showError();
+				return;
+			}
+			*saving = true;
+			auto done = [=](Ton::Result<> result) {
+				*saving = false;
+				if (result) {
+					box->closeBox();
+				} else {
+					old->showError();
+					return;
+				}
+			};
+			_wallet->changePassword(from.toUtf8(), pwd.toUtf8(), done);
+		});
+		box->addButton(rpl::single(QString("Cancel")), [=] {
+			box->closeBox();
+		});
+	}));
+}
+
+void Application::logout() {
+	_wallet->deleteKey(_wallet->publicKeys().front(), [=](
+			Ton::Result<> result) {
+		if (result) {
+			showIntro();
+		}
+	});
 }
 
 void Application::initWindow() {
