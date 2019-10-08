@@ -18,11 +18,13 @@ class LayerManager;
 
 namespace Ton {
 class Wallet;
+struct TransactionsSlice;
 } // namespace Ton
 
 namespace Wallet {
 
 class Intro;
+class Info;
 
 class Application final : public base::has_weak_ptr {
 public:
@@ -40,7 +42,7 @@ private:
 	void handleWindowKeyPress(not_null<QKeyEvent*> e);
 	void openWallet();
 	void showIntro();
-	void showWallet();
+	void showInfo();
 
 	const QString _path;
 	const std::unique_ptr<Ton::Wallet> _wallet;
@@ -48,6 +50,9 @@ private:
 	const std::unique_ptr<Ui::LayerManager> _layers;
 
 	std::unique_ptr<Intro> _intro;
+	std::unique_ptr<Info> _info;
+	rpl::event_stream<int64> _balance;
+	rpl::event_stream<Ton::TransactionsSlice> _lastTransactions;
 
 	rpl::lifetime _lifetime;
 

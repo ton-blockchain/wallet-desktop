@@ -7,6 +7,9 @@
 #include "wallet/application.h"
 
 #include "wallet/phrases.h"
+#include "wallet/ton_default_config.h"
+#include "ton/ton_config.h"
+#include "ton/ton_state.h"
 #include "ton/ton_wallet.h"
 #include "ui/widgets/window.h"
 #include "ui/text/text_utilities.h"
@@ -23,6 +26,7 @@
 #include "ui/widgets/labels.h"
 #include "wallet/wallet_intro.h"
 #include "wallet/wallet_phrases.h"
+#include "wallet/wallet_info.h"
 #include "styles/style_layers.h"
 
 #include <QtCore/QStandardPaths>
@@ -54,12 +58,12 @@ void Application::run() {
 }
 
 void Application::openWallet() {
-	_wallet->open(QByteArray(), crl::guard(this, [=](Ton::Result<> result) {
+	auto opened = [=](Ton::Result<> result) {
 		if (result) {
 			if (_wallet->publicKeys().empty()) {
 				showIntro();
 			} else {
-				showWallet();
+				showInfo();
 			}
 			return;
 		}
@@ -76,13 +80,13 @@ void Application::openWallet() {
 				QApplication::quit();
 			});
 		}));
-	}));
+	};
+	_wallet->open(QByteArray(), GetDefaultConfig(), std::move(opened));
 }
 
 void Application::showIntro() {
-	_intro = std::make_unique<Intro>(
-		_window->body(),
-		Intro::Mode::Standalone);
+	_info = nullptr;
+	_intro = std::make_unique<Intro>(_window->body());
 
 	_layers->raise();
 	_layers->hideAll();
@@ -96,37 +100,63 @@ void Application::showIntro() {
 	) | rpl::start_with_next([=](Intro::Action action) {
 		switch (action) {
 		case Intro::Action::CreateWallet: {
-			_wallet->createKey(crl::guard(this, [=](Ton::Result<std::vector<QString>>) {
-				_wallet->saveKey("testingpass", crl::guard(this, [=](Ton::Result<QByteArray>) {
-					showWallet();
-				}));
-			}));
+			_wallet->createKey([=](Ton::Result<std::vector<QString>>) {
+				_wallet->saveKey("testingpass", [=](Ton::Result<QByteArray>) {
+					showInfo();
+				});
+			});
 		} break;
 		}
 	}, _intro->lifetime());
 }
 
-void Application::showWallet() {
+void Application::showInfo() {
 	Expects(!_wallet->publicKeys().empty());
+
+	const auto key = _wallet->publicKeys().front();
+	const auto address = Ton::Wallet::GetAddress(key);
 
 	_intro = nullptr;
 
-	const auto text = "YOUR KEY: "
-		+ QString::fromLatin1(_wallet->publicKeys().front());
-	_layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
-		box->setCloseByEscape(false);
-		box->setCloseByOutsideClick(false);
-		box->setTitle(rpl::single(QString("Wallet")));
-		box->addRow(object_ptr<Ui::FlatLabel>(box, text, st::boxLabel));
-		box->addButton(rpl::single(QString("Delete")), [=] {
-			_wallet->deleteKey(_wallet->publicKeys().front(), [=](auto) {
-				showIntro();
-			});
+	auto data = Info::Data();
+	data.address = address;
+	data.balance = _balance.events();
+	data.lastTransactions = _lastTransactions.events();
+	_info = std::make_unique<Info>(_window->body(), data);
+
+	_layers->raise();
+	_layers->hideAll();
+
+	_window->body()->sizeValue(
+	) | rpl::start_with_next([=](QSize size) {
+		_info->setGeometry({ QPoint(), size });
+	}, _info->lifetime());
+
+	const auto refresh = [=] {
+		_wallet->requestState(address, [=](
+				Ton::Result<Ton::AccountState> result) {
+			if (result) {
+				_balance.fire_copy(std::max(result->balance, 0LL));
+				_wallet->requestTransactions(
+					address,
+					result->lastTransactionId,
+					[=](Ton::Result<Ton::TransactionsSlice> result) {
+						if (result) {
+							_lastTransactions.fire(std::move(*result));
+						}
+					});
+			}
 		});
-		box->addButton(rpl::single(QString("Quit")), [] {
-			QApplication::quit();
-		});
-	}));
+	};
+
+	_info->actionRequests(
+	) | rpl::start_with_next([=](Info::Action action) {
+		switch (action) {
+		case Info::Action::Refresh: refresh(); break;
+		}
+	}, _info->lifetime());
+
+	refresh();
 }
 
 void Application::initWindow() {

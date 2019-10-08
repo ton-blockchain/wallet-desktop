@@ -10,6 +10,8 @@
 <(src_loc)/wallet/application.h
 <(src_loc)/wallet/phrases.cpp
 <(src_loc)/wallet/phrases.h
+<(src_loc)/wallet/ton_default_config.cpp
+<(src_loc)/wallet/ton_default_config.h
 
 platforms: win
 <(res_loc)/win/Wallet.rc
