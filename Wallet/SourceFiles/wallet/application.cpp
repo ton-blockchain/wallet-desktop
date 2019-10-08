@@ -24,6 +24,7 @@
 #include "ui/layers/generic_box.h"
 #include "ui/layers/layer_manager.h"
 #include "ui/widgets/labels.h"
+#include "ui/widgets/input_fields.h"
 #include "wallet/wallet_intro.h"
 #include "wallet/wallet_phrases.h"
 #include "wallet/wallet_info.h"
@@ -153,10 +154,86 @@ void Application::showInfo() {
 	) | rpl::start_with_next([=](Info::Action action) {
 		switch (action) {
 		case Info::Action::Refresh: refresh(); break;
+		case Info::Action::Send: sendGrams(); break;
 		}
 	}, _info->lifetime());
 
 	refresh();
+}
+
+void Application::sendGrams() {
+	_layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
+		box->setTitle(rpl::single(QString("Send grams")));
+		const auto recipient = box->addRow(object_ptr<Ui::InputField>(
+			box,
+			st::defaultInputField,
+			rpl::single(QString("Recipient"))));
+		const auto amount = box->addRow(object_ptr<Ui::InputField>(
+			box,
+			st::defaultInputField,
+			rpl::single(QString("Amount"))));
+		const auto comment = box->addRow(object_ptr<Ui::InputField>(
+			box,
+			st::defaultInputField,
+			rpl::single(QString("Comment"))));
+		const auto passwordWrap = box->addRow(object_ptr<Ui::RpWidget>(box));
+		const auto password = Ui::CreateChild<Ui::PasswordInput>(
+			passwordWrap,
+			st::defaultInputField,
+			rpl::single(QString("Password")));
+		passwordWrap->widthValue(
+		) | rpl::start_with_next([=](int width) {
+			password->resize(width, password->height());
+		}, password->lifetime());
+		password->heightValue(
+		) | rpl::start_with_next([=](int height) {
+			passwordWrap->resize(passwordWrap->width(), height);
+		}, password->lifetime());
+		password->move(0, 0);
+		const auto sending = box->lifetime().make_state<bool>(false);
+		box->addButton(rpl::single(QString("Send")), [=] {
+			if (*sending) {
+				return;
+			}
+			auto data = Ton::TransactionToSend();
+			data.recipient = recipient->getLastText().trimmed();
+			if (data.recipient.isEmpty()) {
+				recipient->showError();
+				return;
+			}
+			data.amount = int64(amount->getLastText().trimmed().toDouble()
+				* 1'000'000'000);
+			if (data.amount <= 0) {
+				amount->showError();
+				return;
+			}
+			data.comment = comment->getLastText().trimmed();
+			data.allowSendToUninited = true;
+			auto pwd = password->getLastText().trimmed();
+			if (pwd.isEmpty()) {
+				password->showError();
+				return;
+			}
+			*sending = true;
+			auto done = [=](Ton::Result<Ton::SentTransaction> result) {
+				*sending = false;
+				if (result) {
+					box->closeBox();
+				} else {
+					recipient->showError();
+					return;
+				}
+			};
+			_wallet->sendGrams(
+				_wallet->publicKeys().front(),
+				pwd.toUtf8(),
+				data,
+				done);
+		});
+		box->addButton(rpl::single(QString("Cancel")), [=] {
+			box->closeBox();
+		});
+	}));
 }
 
 void Application::initWindow() {

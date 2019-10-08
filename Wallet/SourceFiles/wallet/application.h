@@ -41,6 +41,7 @@ private:
 	void handleWindowEvent(not_null<QEvent*> e);
 	void handleWindowKeyPress(not_null<QKeyEvent*> e);
 	void openWallet();
+	void sendGrams();
 	void showIntro();
 	void showInfo();
 
