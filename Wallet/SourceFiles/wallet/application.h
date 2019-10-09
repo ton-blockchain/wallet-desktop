@@ -18,7 +18,7 @@ class LayerManager;
 
 namespace Ton {
 class Wallet;
-struct TransactionsSlice;
+class AccountViewer;
 } // namespace Ton
 
 namespace Wallet {
@@ -53,10 +53,9 @@ private:
 	const std::unique_ptr<Ui::Window> _window;
 	const std::unique_ptr<Ui::LayerManager> _layers;
 
+	std::unique_ptr<Ton::AccountViewer> _viewer;
 	std::unique_ptr<Intro> _intro;
 	std::unique_ptr<Info> _info;
-	rpl::event_stream<int64> _balance;
-	rpl::event_stream<Ton::TransactionsSlice> _lastTransactions;
 
 	rpl::lifetime _lifetime;
 

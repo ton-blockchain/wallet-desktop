@@ -11,6 +11,7 @@
 #include "ton/ton_config.h"
 #include "ton/ton_state.h"
 #include "ton/ton_wallet.h"
+#include "ton/ton_account_viewer.h"
 #include "ui/widgets/window.h"
 #include "ui/text/text_utilities.h"
 #include "ui/rp_widget.h"
@@ -39,6 +40,11 @@
 #include <QtWidgets/QFileDialog>
 
 namespace Wallet {
+namespace {
+
+constexpr auto kRefreshEachDelay = 10 * crl::time(1000);
+
+} // namespace
 
 Application::Application(const QString &path)
 : _path(path)
@@ -169,11 +175,11 @@ void Application::showInfo() {
 	const auto address = Ton::Wallet::GetAddress(key);
 
 	_intro = nullptr;
+	_viewer = _wallet->createAccountViewer(address);
+	_viewer->setRefreshEach(kRefreshEachDelay);
 
 	auto data = Info::Data();
-	data.address = address;
-	data.balance = _balance.events();
-	data.lastTransactions = _lastTransactions.events();
+	data.state = _viewer->state();
 	_info = std::make_unique<Info>(_window->body(), data);
 
 	_layers->raise();
@@ -184,34 +190,15 @@ void Application::showInfo() {
 		_info->setGeometry({ QPoint(), size });
 	}, _info->lifetime());
 
-	const auto refresh = [=] {
-		_wallet->requestState(address, [=](
-				Ton::Result<Ton::AccountState> result) {
-			if (result) {
-				_balance.fire_copy(std::max(result->balance, 0LL));
-				_wallet->requestTransactions(
-					address,
-					result->lastTransactionId,
-					[=](Ton::Result<Ton::TransactionsSlice> result) {
-						if (result) {
-							_lastTransactions.fire(std::move(*result));
-						}
-					});
-			}
-		});
-	};
-
 	_info->actionRequests(
 	) | rpl::start_with_next([=](Info::Action action) {
 		switch (action) {
-		case Info::Action::Refresh: refresh(); break;
+		case Info::Action::Refresh: _viewer->refreshNow(); break;
 		case Info::Action::Send: sendGrams(); break;
 		case Info::Action::ChangePassword: changePassword(); break;
 		case Info::Action::LogOut: logout(); break;
 		}
 	}, _info->lifetime());
-
-	refresh();
 }
 
 void Application::sendGrams() {
@@ -268,7 +255,7 @@ void Application::sendGrams() {
 				return;
 			}
 			*sending = true;
-			auto done = [=](Ton::Result<Ton::SentTransaction> result) {
+			auto done = [=](Ton::Result<Ton::PendingTransaction> result) {
 				*sending = false;
 				if (result) {
 					box->closeBox();
