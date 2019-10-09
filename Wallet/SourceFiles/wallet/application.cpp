@@ -354,8 +354,7 @@ void Application::changePassword() {
 }
 
 void Application::logout() {
-	_wallet->deleteKey(_wallet->publicKeys().front(), [=](
-			Ton::Result<> result) {
+	_wallet->deleteAllKeys([=](Ton::Result<> result) {
 		if (result) {
 			showIntro();
 		}
