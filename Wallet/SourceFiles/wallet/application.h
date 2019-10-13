@@ -23,6 +23,7 @@ class AccountViewer;
 
 namespace Wallet {
 
+class Window;
 class Intro;
 class Info;
 
@@ -36,26 +37,12 @@ public:
 	void run();
 
 private:
-	void initWindow();
-	void updateWindowPalette();
-	void handleWindowEvent(not_null<QEvent*> e);
-	void handleWindowKeyPress(not_null<QKeyEvent*> e);
 	void openWallet();
-	void showIntro();
-	void saveKey(const std::vector<QString> &words);
-	void showInfo();
-	void sendGrams();
-	void changePassword();
-	void logout();
+	void criticalError(const QString &text);
 
 	const QString _path;
 	const std::unique_ptr<Ton::Wallet> _wallet;
-	const std::unique_ptr<Ui::Window> _window;
-	const std::unique_ptr<Ui::LayerManager> _layers;
-
-	std::unique_ptr<Ton::AccountViewer> _viewer;
-	std::unique_ptr<Intro> _intro;
-	std::unique_ptr<Info> _info;
+	std::unique_ptr<Wallet::Window> _window;
 
 	rpl::lifetime _lifetime;
 

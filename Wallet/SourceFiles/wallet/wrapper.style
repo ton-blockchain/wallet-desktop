@@ -6,6 +6,3 @@
 //
 using "ui/basic.style";
 using "ui/widgets/widgets.style";
-
-windowSize: size(665px, 488px);
-windowSizeMin: size(480px, 480px);
