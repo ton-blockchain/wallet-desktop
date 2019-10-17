@@ -16,6 +16,13 @@
       'style_files': [
         '<(src_loc)/wallet/wrapper.style',
       ],
+      'qrc_files': [
+        '<(res_loc)/qrc/emoji_1.qrc',
+        '<(res_loc)/qrc/emoji_2.qrc',
+        '<(res_loc)/qrc/emoji_3.qrc',
+        '<(res_loc)/qrc/emoji_4.qrc',
+        '<(res_loc)/qrc/emoji_5.qrc',
+      ],
       'dependent_style_files': [
         '<(submodules_loc)/lib_ui/ui/colors.palette',
         '<(submodules_loc)/lib_ui/ui/basic.style',
@@ -38,6 +45,7 @@
       'wallet/mac.gypi',
       'wallet/linux.gypi',
       '../lib_ui/gyp/styles_rule.gypi',
+      '../lib_ui/gyp/qrc_rule.gypi',
     ],
 
     'dependencies': [
@@ -60,6 +68,7 @@
       '<(src_loc)',
     ],
     'sources': [
+      '<@(qrc_files)',
       '<@(style_files)',
       '<(DEPTH)/wallet/sources.txt',
       '<!@(<(list_sources_command) <(qt_moc_list_sources_arg))',
