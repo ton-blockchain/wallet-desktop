@@ -7,6 +7,7 @@
 #include "core/launcher.h"
 
 #include "ui/main_queue_processor.h"
+#include "ui/ui_utility.h"
 #include "core/sandbox.h"
 #include "base/platform/base_platform_info.h"
 #include "base/concurrent_timer.h"
@@ -87,6 +88,7 @@ int Launcher::exec() {
 	options.insert("custom_font_config_src", QString(":/fc/fc-custom.conf"));
 	options.insert("custom_font_config_dst", tempFontConfigPath);
 	Platform::Start(options);
+	Ui::DisableCustomScaling();
 
 	auto result = executeApplication();
 

@@ -22,6 +22,7 @@
         '<(res_loc)/qrc/emoji_3.qrc',
         '<(res_loc)/qrc/emoji_4.qrc',
         '<(res_loc)/qrc/emoji_5.qrc',
+        '<(res_loc)/qrc/config.qrc',
       ],
       'dependent_style_files': [
         '<(submodules_loc)/lib_ui/ui/colors.palette',

@@ -8,34 +8,15 @@
 
 #include "ton/ton_config.h"
 
+#include <QtCore/QFile>
+
 namespace Wallet {
 
 Ton::Config GetDefaultConfig() {
 	auto result = Ton::Config();
-	result.json = R"json(
-{
-  "liteservers": [
-    {
-      "ip": 1137658550,
-      "port": 4924,
-      "id": {
-        "@type": "pub.ed25519",
-        "key": "peJTw/arlRfssgTuf9BMypJzqOi7SXEqSPSWiEw2U1M="
-      }
-    }
-  ],
-  "validator": {
-    "@type": "validator.config.global",
-    "zero_state": {
-      "workchain": -1,
-      "shard": -9223372036854775808,
-      "seqno": 0,
-      "root_hash": "VCSXxDHhTALFxReyTZRd8E4Ya3ySOmpOWAS4rBX9XBY=",
-      "file_hash": "eh9yveSz1qMdJ7mOsO+I+H77jkLr9NpAuEkoJuseXBo="
-    }
-  }
-}
-)json";
+	auto file = QFile(":/config/default.json");
+	file.open(QIODevice::ReadOnly);
+	result.json = file.readAll();
 	result.ignoreCache = result.useNetworkCallbacks = false;
 	result.blockchainName = QString();
 	return result;
