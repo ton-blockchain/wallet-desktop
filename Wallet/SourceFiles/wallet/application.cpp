@@ -13,6 +13,8 @@
 #include "ton/ton_wallet.h"
 #include "ton/ton_account_viewer.h"
 #include "ui/widgets/window.h"
+#include "ui/layers/generic_box.h"
+#include "ui/layers/layer_manager.h"
 #include "ui/text/text_utilities.h"
 #include "ui/rp_widget.h"
 #include "core/sandbox.h"
@@ -20,6 +22,7 @@
 #include "base/call_delayed.h"
 #include "styles/style_wrapper.h"
 #include "styles/style_widgets.h"
+#include "styles/style_layers.h"
 #include "styles/palette.h"
 
 #include <QtGui/QIcon>
@@ -57,15 +60,20 @@ void Application::openWallet() {
 }
 
 void Application::criticalError(const QString &text) {
-	//_layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
-	//	box->setCloseByEscape(false);
-	//	box->setCloseByOutsideClick(false);
-	//	box->setTitle(rpl::single(QString("Error")));
-	//	box->addRow(object_ptr<Ui::FlatLabel>(box, error, st::boxLabel));
-	//	box->addButton(rpl::single(QString("Quit")), [] {
-	//		QCoreApplication::quit();
-	//	});
-	//}));
+	const auto window = _lifetime.make_state<Ui::Window>();
+	const auto layers = _lifetime.make_state<Ui::LayerManager>(window->body());
+	layers->showBox(Box([=](not_null<Ui::GenericBox*> box) {
+		box->setCloseByEscape(false);
+		box->setCloseByOutsideClick(false);
+		box->setTitle(rpl::single(QString("Error")));
+		box->addRow(object_ptr<Ui::FlatLabel>(box, text, st::boxLabel));
+		box->addButton(rpl::single(QString("Quit")), [] {
+			QCoreApplication::quit();
+		});
+	}));
+
+	window->resize(2 * st::boxWidth, 3 * st::boxWidth / 2);
+	window->show();
 }
 
 } // namespace Wallet

@@ -15,6 +15,4 @@ inline constexpr auto now = ph::now;
 
 using phrase = ph::phrase;
 
-extern phrase lng_window_title;
-
 } // namespace tr

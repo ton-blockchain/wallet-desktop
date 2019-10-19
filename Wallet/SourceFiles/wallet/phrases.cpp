@@ -8,6 +8,4 @@
 
 namespace tr {
 
-phrase lng_window_title = "TON Desktop Wallet";
-
 } // namespace tr
