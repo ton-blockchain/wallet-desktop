@@ -58,9 +58,8 @@ void Sandbox::run() {
 }
 
 void Sandbox::launchApplication() {
-	const auto path = QStandardPaths::writableLocation(
-		QStandardPaths::AppDataLocation);
-	_application = std::make_unique<Wallet::Application>(path);
+	_application = std::make_unique<Wallet::Application>(
+		_launcher->workingPath());
 	connect(this, &Sandbox::aboutToQuit, [=] {
 		customEnterFromEventLoop([&] {
 			_application = nullptr;

@@ -36,7 +36,7 @@
       'Debug': {
         'xcode_settings': {
           'GCC_OPTIMIZATION_LEVEL': '0',
-          'PRODUCT_BUNDLE_IDENTIFIER': 'org.ton.TonDesktopWalletDebug',
+          'PRODUCT_BUNDLE_IDENTIFIER': 'org.ton.wallet.desktop.debug',
         },
       },
       'Release': {
@@ -44,7 +44,7 @@
           'DEBUG_INFORMATION_FORMAT': 'dwarf-with-dsym',
           'LLVM_LTO': 'YES',
           'GCC_OPTIMIZATION_LEVEL': 'fast',
-          'PRODUCT_BUNDLE_IDENTIFIER': 'org.ton.TonDesktopWallet',
+          'PRODUCT_BUNDLE_IDENTIFIER': 'org.ton.wallet.desktop',
         },
       },
     },

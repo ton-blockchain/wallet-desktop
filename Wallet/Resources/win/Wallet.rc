@@ -50,10 +50,10 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Telegram FZ-LLC"
-            VALUE "FileDescription", "TON Desktop Wallet"
+            VALUE "FileDescription", "Gram Wallet"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "LegalCopyright", "Copyright (C) 2019"
-            VALUE "ProductName", "TON Desktop Wallet"
+            VALUE "ProductName", "Gram Wallet"
             VALUE "ProductVersion", "1.0.0.0"
         END
     END
