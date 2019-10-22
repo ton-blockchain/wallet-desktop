@@ -21,6 +21,7 @@
 #include <QtGui/QScreen>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QDesktopServices>
+#include <QtGui/QtEvents>
 
 namespace Core {
 namespace {
@@ -144,6 +145,14 @@ auto Sandbox::createNestedEventLoopState(not_null<QObject*> guard)
 bool Sandbox::event(QEvent *event) {
 	if (event->type() == QEvent::Close) {
 		quit();
+	} else if (event->type() == QEvent::FileOpen) {
+		const auto e = static_cast<QFileOpenEvent*>(event);
+		const auto url = e->url().toEncoded().trimmed();
+		const auto string = QString::fromUtf8(url);
+		if (string.startsWith("ton://", Qt::CaseInsensitive)) {
+			_launchCommand = "OPEN:" + url.mid(0, 8192);
+			handleLaunchCommand();
+		}
 	}
 	return QApplication::event(event);
 }
