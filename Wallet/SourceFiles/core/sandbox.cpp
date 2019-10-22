@@ -12,6 +12,7 @@
 #include "ui/emoji_config.h"
 #include "ui/effects/animations.h"
 #include "base/concurrent_timer.h"
+#include "base/single_instance.h"
 #include "base/unixtime.h"
 #include "base/timer.h"
 
@@ -31,12 +32,32 @@ Sandbox::Sandbox(
 , _mainThreadId(QThread::currentThreadId())
 , _animationsManager(std::make_unique<Ui::Animations::Manager>()) {
 	Ui::Integration::Set(&uiIntegration);
-	InvokeQueued(this, [=] { run(); });
+	InvokeQueued(this, [=] { checkSingleInstance(); });
 }
 
 Sandbox::~Sandbox() {
 	Ui::Emoji::Clear();
 	style::stopManager();
+}
+
+void Sandbox::checkSingleInstance() {
+	_singleInstance = std::make_unique<base::SingleInstance>();
+
+	_singleInstance->commands(
+	) | rpl::start_with_next([=](const base::SingleInstance::Message &cmd) {
+		_singleInstance->reply(
+			cmd.id,
+			(_application
+				? _application->handleCommandGetActivated(cmd.data)
+				: nullptr));
+	}, _lifetime);
+
+	_singleInstance->start(
+		QApplication::applicationName(),
+		_launcher->workingPath(),
+		[=] { crl::on_main(this, [=] { run(); }); },
+		[=] { _singleInstance->send("SHOW", [=] { quit(); }); },
+		[=] { crl::on_main(this, [=] { run(); }); }); // Try running anyway.
 }
 
 void Sandbox::run() {
@@ -62,6 +83,7 @@ void Sandbox::launchApplication() {
 		_launcher->workingPath());
 	connect(this, &Sandbox::aboutToQuit, [=] {
 		customEnterFromEventLoop([&] {
+			_singleInstance = nullptr;
 			_application = nullptr;
 		});
 	});

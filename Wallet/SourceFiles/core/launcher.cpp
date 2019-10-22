@@ -173,6 +173,14 @@ QString Launcher::argumentsString() const {
 	return _arguments.join(' ');
 }
 
+QString Launcher::executablePath() const {
+	return _executablePath;
+}
+
+QString Launcher::executableName() const {
+	return _executableName;
+}
+
 QString Launcher::workingPath() const {
 	return _workingPath;
 }

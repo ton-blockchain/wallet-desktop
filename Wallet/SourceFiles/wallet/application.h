@@ -35,6 +35,7 @@ public:
 	~Application();
 
 	void run();
+	QWidget *handleCommandGetActivated(const QByteArray &command);
 
 private:
 	void openWallet();

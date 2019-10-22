@@ -12,6 +12,10 @@
 #include <QtWidgets/QApplication>
 #include <QtCore/QAbstractNativeEventFilter>
 
+namespace base {
+class SingleInstance;
+} // namespace base
+
 namespace Ui {
 namespace Animations {
 class Manager;
@@ -99,6 +103,7 @@ private:
 		}
 	};
 
+	void checkSingleInstance();
 	bool notifyOrInvoke(QObject *receiver, QEvent *e);
 	void registerEnterFromEventLoop();
 	void incrementEventNestingLevel();
@@ -118,6 +123,8 @@ private:
 
 	const not_null<Launcher*> _launcher;
 	UiIntegration uiIntegration;
+
+	std::unique_ptr<base::SingleInstance> _singleInstance;
 
 	const Qt::HANDLE _mainThreadId = nullptr;
 	int _eventNestingLevel = 0;

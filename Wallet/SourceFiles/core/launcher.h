@@ -17,6 +17,8 @@ public:
 	int exec();
 
 	[[nodiscard]] QString argumentsString() const;
+	[[nodiscard]] QString executablePath() const;
+	[[nodiscard]] QString executableName() const;
 	[[nodiscard]] QString workingPath() const;
 
 	virtual ~Launcher() = default;

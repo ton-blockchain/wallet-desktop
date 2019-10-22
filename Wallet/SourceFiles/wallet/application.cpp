@@ -42,6 +42,14 @@ void Application::run() {
 	openWallet();
 }
 
+QWidget *Application::handleCommandGetActivated(const QByteArray &command) {
+	if (!_window) {
+		return nullptr;
+	}
+	_window->showAndActivate();
+	return _window->widget();
+}
+
 void Application::openWallet() {
 	auto opened = [=](Ton::Result<> result) {
 		if (!result) {
@@ -52,8 +60,7 @@ void Application::openWallet() {
 			criticalError(text);
 		} else {
 			_window = std::make_unique<Wallet::Window>(_wallet.get());
-			_window->show();
-			_window->setFocus();
+			_window->showAndActivate();
 		}
 	};
 	_wallet->open(QByteArray(), GetDefaultConfig(), std::move(opened));
