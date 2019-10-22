@@ -10,6 +10,7 @@
 
 class QEvent;
 class QKeyEvent;
+class QWidget;
 
 namespace Ui {
 class Window;
@@ -40,10 +41,13 @@ public:
 private:
 	void openWallet();
 	void criticalError(const QString &text);
+	void handleLaunchCommand();
+	bool handleCommand(const QByteArray &command);
 
 	const QString _path;
 	const std::unique_ptr<Ton::Wallet> _wallet;
 	std::unique_ptr<Wallet::Window> _window;
+	QByteArray _launchCommand;
 
 	rpl::lifetime _lifetime;
 

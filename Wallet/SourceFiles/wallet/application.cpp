@@ -31,7 +31,8 @@ namespace Wallet {
 
 Application::Application(const QString &path)
 : _path(path)
-, _wallet(std::make_unique<Ton::Wallet>(_path)) {
+, _wallet(std::make_unique<Ton::Wallet>(_path))
+, _launchCommand("SHOW") {
 	QApplication::setWindowIcon(QIcon(QPixmap(":/gui/art/logo.png", "PNG")));
 }
 
@@ -43,11 +44,28 @@ void Application::run() {
 }
 
 QWidget *Application::handleCommandGetActivated(const QByteArray &command) {
-	if (!_window) {
-		return nullptr;
+	_launchCommand = command;
+	handleLaunchCommand();
+	return _window ? _window->widget().get() : nullptr;
+}
+
+void Application::handleLaunchCommand() {
+	if (!_window || _launchCommand.isEmpty()) {
+		return;
 	}
 	_window->showAndActivate();
-	return _window->widget();
+	if (handleCommand(_launchCommand)) {
+		_launchCommand = QByteArray();
+	}
+}
+
+bool Application::handleCommand(const QByteArray &command) {
+	if (_launchCommand == "SHOW") {
+		return true;
+	} else if (command.startsWith("OPEN:")) {
+		return _window->handleLinkOpen(QString::fromUtf8(command.mid(5)));
+	}
+	return false;
 }
 
 void Application::openWallet() {
@@ -60,7 +78,7 @@ void Application::openWallet() {
 			criticalError(text);
 		} else {
 			_window = std::make_unique<Wallet::Window>(_wallet.get());
-			_window->showAndActivate();
+			handleLaunchCommand();
 		}
 	};
 	_wallet->open(QByteArray(), GetDefaultConfig(), std::move(opened));

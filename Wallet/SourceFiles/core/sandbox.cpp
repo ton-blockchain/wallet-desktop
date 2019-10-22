@@ -11,6 +11,7 @@
 #include "ui/widgets/tooltip.h"
 #include "ui/emoji_config.h"
 #include "ui/effects/animations.h"
+#include "base/platform/base_platform_url_scheme.h"
 #include "base/concurrent_timer.h"
 #include "base/single_instance.h"
 #include "base/unixtime.h"
@@ -22,6 +23,23 @@
 #include <QtGui/QDesktopServices>
 
 namespace Core {
+namespace {
+
+base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
+		not_null<Launcher*> launcher) {
+	auto result = base::Platform::UrlSchemeDescriptor();
+	result.executable = launcher->executablePath()
+		+ launcher->executableName();
+	result.protocol = "ton";
+	result.protocolName = "TON Gram Transfer Link";
+	result.shortAppName = "gramwallet";
+	result.longAppName = "GramWallet";
+	result.displayAppName = "Gram Wallet";
+	result.displayAppDescription = "Desktop wallet for TON";
+	return result;
+}
+
+} // namespace
 
 Sandbox::Sandbox(
 	not_null<Launcher*> launcher,
@@ -45,19 +63,30 @@ void Sandbox::checkSingleInstance() {
 
 	_singleInstance->commands(
 	) | rpl::start_with_next([=](const base::SingleInstance::Message &cmd) {
-		_singleInstance->reply(
-			cmd.id,
-			(_application
-				? _application->handleCommandGetActivated(cmd.data)
-				: nullptr));
+		_launchCommand = cmd.data;
+		_singleInstance->reply(cmd.id, handleLaunchCommand());
 	}, _lifetime);
 
+	_launchCommand = computeLaunchCommand();
 	_singleInstance->start(
 		QApplication::applicationName(),
 		_launcher->workingPath(),
 		[=] { crl::on_main(this, [=] { run(); }); },
-		[=] { _singleInstance->send("SHOW", [=] { quit(); }); },
+		[=] { _singleInstance->send(_launchCommand, [=] { quit(); }); },
 		[=] { crl::on_main(this, [=] { run(); }); }); // Try running anyway.
+}
+
+QByteArray Sandbox::computeLaunchCommand() const {
+	if (const auto url = _launcher->openedUrl(); !url.isEmpty()) {
+		return "OPEN:" + url.toUtf8();
+	}
+	return "SHOW";
+}
+
+QWidget *Sandbox::handleLaunchCommand() {
+	return _application
+		? _application->handleCommandGetActivated(base::take(_launchCommand))
+		: nullptr;
 }
 
 void Sandbox::run() {
@@ -88,6 +117,9 @@ void Sandbox::launchApplication() {
 		});
 	});
 	_application->run();
+	handleLaunchCommand();
+
+	base::Platform::RegisterUrlScheme(CustomSchemeDescriptor(_launcher));
 }
 
 auto Sandbox::createNestedEventLoopState(not_null<QObject*> guard)

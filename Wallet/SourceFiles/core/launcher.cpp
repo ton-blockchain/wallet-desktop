@@ -185,6 +185,10 @@ QString Launcher::workingPath() const {
 	return _workingPath;
 }
 
+QString Launcher::openedUrl() const {
+	return _openedUrl;
+}
+
 void Launcher::initExecutablePath() {
 	const auto path = base::Platform::CurrentExecutablePath(_argc, _argv);
 	if (path.isEmpty()) {
@@ -216,6 +220,14 @@ void Launcher::prepareSettings() {
 }
 
 void Launcher::processArguments() {
+	auto nextUrl = false;
+	for (const auto &argument : _arguments) {
+		if (nextUrl) {
+			_openedUrl = argument;
+		} else if (argument == "--") {
+			nextUrl = true;
+		}
+	}
 }
 
 int Launcher::executeApplication() {

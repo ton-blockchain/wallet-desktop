@@ -118,6 +118,9 @@ private:
 	std::shared_ptr<NestedEventLoopState> createNestedEventLoopState(
 		not_null<QObject*> guard);
 
+	[[nodiscard]] QByteArray computeLaunchCommand() const;
+	QWidget *handleLaunchCommand();
+
 	void setScale(int scale);
 	void stateChanged(Qt::ApplicationState state);
 
@@ -125,6 +128,7 @@ private:
 	UiIntegration uiIntegration;
 
 	std::unique_ptr<base::SingleInstance> _singleInstance;
+	QByteArray _launchCommand;
 
 	const Qt::HANDLE _mainThreadId = nullptr;
 	int _eventNestingLevel = 0;

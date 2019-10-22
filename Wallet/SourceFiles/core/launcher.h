@@ -20,6 +20,7 @@ public:
 	[[nodiscard]] QString executablePath() const;
 	[[nodiscard]] QString executableName() const;
 	[[nodiscard]] QString workingPath() const;
+	[[nodiscard]] QString openedUrl() const;
 
 	virtual ~Launcher() = default;
 
@@ -46,6 +47,7 @@ private:
 	QString _executableName;
 	QString _appDataPath;
 	QString _workingPath;
+	QString _openedUrl;
 
 };
 
