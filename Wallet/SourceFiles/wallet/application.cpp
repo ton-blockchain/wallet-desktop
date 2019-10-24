@@ -19,6 +19,7 @@
 #include "ui/rp_widget.h"
 #include "core/sandbox.h"
 #include "base/platform/base_platform_info.h"
+#include "base/event_filter.h"
 #include "base/call_delayed.h"
 #include "styles/style_wrapper.h"
 #include "styles/style_widgets.h"
@@ -26,6 +27,7 @@
 #include "styles/palette.h"
 
 #include <QtGui/QIcon>
+#include <QtGui/QtEvents>
 
 namespace Wallet {
 
@@ -40,7 +42,25 @@ Application::~Application() {
 }
 
 void Application::run() {
+	installGlobalShortcutFilter();
 	openWallet();
+}
+
+void Application::installGlobalShortcutFilter() {
+	const auto handleGlobalShortcut = [=](not_null<QEvent*> e) {
+		if (e->type() == QEvent::KeyPress) {
+			const auto ke = static_cast<QKeyEvent*>(e.get());
+			if (ke->modifiers() == Qt::ControlModifier) {
+				if (ke->key() == Qt::Key_W || ke->key() == Qt::Key_Q) {
+					Core::Sandbox::Instance().quit();
+				}
+			}
+		}
+		return base::EventFilterResult::Continue;
+	};
+	base::install_event_filter(
+		&Core::Sandbox::Instance(),
+		handleGlobalShortcut);
 }
 
 QWidget *Application::handleCommandGetActivated(const QByteArray &command) {

@@ -39,6 +39,7 @@ public:
 	QWidget *handleCommandGetActivated(const QByteArray &command);
 
 private:
+	void installGlobalShortcutFilter();
 	void openWallet();
 	void criticalError(const QString &text);
 	void handleLaunchCommand();
