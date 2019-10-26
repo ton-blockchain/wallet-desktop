@@ -253,6 +253,9 @@ inline void log(const char *message, const char *file, int line) {
 #ifdef LOG
 	LOG((entry));
 #endif // LOG
+	if (QCoreApplication::instance()) {
+		Core::Sandbox::Instance().reportAssertionViolation(info);
+	}
 }
 
 } // namespace assertion

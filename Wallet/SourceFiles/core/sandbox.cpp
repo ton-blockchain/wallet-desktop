@@ -12,6 +12,7 @@
 #include "ui/emoji_config.h"
 #include "ui/effects/animations.h"
 #include "base/platform/base_platform_url_scheme.h"
+#include "base/crash_report_writer.h"
 #include "base/concurrent_timer.h"
 #include "base/single_instance.h"
 #include "base/unixtime.h"
@@ -94,10 +95,16 @@ QWidget *Sandbox::handleLaunchCommand() {
 }
 
 void Sandbox::run() {
+	style::internal::StartFonts();
 	setupScreenScale();
 	installNativeEventFilter(this);
 
-	style::internal::StartFonts();
+	_crashReportWriter = std::make_unique<base::CrashReportWriter>(
+		_launcher->workingPath() + "crashes/");
+	//if (_crashReportWriter->lastLaunchFailed()) {
+	//	// show and check for updates..
+	//}
+	_crashReportWriter->start();
 
 	style::startManager(_scale);
 	Ui::Emoji::Init();
@@ -118,6 +125,7 @@ void Sandbox::launchApplication() {
 		customEnterFromEventLoop([&] {
 			_singleInstance = nullptr;
 			_application = nullptr;
+			_crashReportWriter = nullptr;
 		});
 	});
 	_application->run();
@@ -274,6 +282,12 @@ void Sandbox::registerEnterFromEventLoop() {
 	if (_eventNestingLevel > _loopNestingLevel) {
 		_previousLoopNestingLevels.push_back(_loopNestingLevel);
 		_loopNestingLevel = _eventNestingLevel;
+	}
+}
+
+void Sandbox::reportAssertionViolation(const QString &info) {
+	if (_crashReportWriter) {
+		_crashReportWriter->addAnnotation("Assertion", info.toStdString());
 	}
 }
 

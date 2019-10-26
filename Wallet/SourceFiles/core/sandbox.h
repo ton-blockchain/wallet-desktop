@@ -14,6 +14,7 @@
 
 namespace base {
 class SingleInstance;
+class CrashReportWriter;
 } // namespace base
 
 namespace Ui {
@@ -50,6 +51,8 @@ public:
 
 	void postponeCall(FnMut<void()> &&callable);
 	bool notify(QObject *receiver, QEvent *e) override;
+
+	void reportAssertionViolation(const QString &info);
 
 	template <typename Callable>
 	auto customEnterFromEventLoop(Callable &&callable) {
@@ -127,6 +130,7 @@ private:
 	const not_null<Launcher*> _launcher;
 	UiIntegration uiIntegration;
 
+	std::unique_ptr<base::CrashReportWriter> _crashReportWriter;
 	std::unique_ptr<base::SingleInstance> _singleInstance;
 	QByteArray _launchCommand;
 

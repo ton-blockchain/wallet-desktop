@@ -13,6 +13,13 @@
       '-lDbgHelp',
     ],
     'msvs_settings': {
+      'VCLinkerTool': {
+        'AdditionalOptions': [
+          'windows/common.lib',
+          'windows/handler/exception_handler.lib',
+          'windows/crash_generation/crash_generation_client.lib',
+        ],
+      },
       'VCManifestTool': {
         'AdditionalManifestFiles': '<(res_loc)/win/Wallet.manifest',
       }
@@ -21,11 +28,13 @@
       'Debug': {
         'library_dirs': [
           '<(libs_loc)/zlib/contrib/vstudio/vc14/x86/ZlibStatDebug',
+          '<(libs_loc)/breakpad/src/out/Debug/obj/client',
         ],
       },
       'Release': {
         'library_dirs': [
           '<(libs_loc)/zlib/contrib/vstudio/vc14/x86/ZlibStatReleaseWithoutAsm',
+          '<(libs_loc)/breakpad/src/out/Release/obj/client',
         ],
       },
     },
