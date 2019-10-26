@@ -34,6 +34,9 @@ base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
 	result.protocol = "ton";
 	result.protocolName = "TON Gram Transfer Link";
 	result.shortAppName = "gramwallet";
+	result.desktopFileDir = launcher->workingPath();
+	result.desktopFileName = "gramwallet";
+	result.iconFileName = "gramwallet";
 	result.longAppName = "GramWallet";
 	result.displayAppName = "Gram Wallet";
 	result.displayAppDescription = "Desktop wallet for TON";

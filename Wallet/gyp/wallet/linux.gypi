@@ -19,6 +19,11 @@
       ],
     },
     'libraries': [
+      '-lz',
+      '-lXi',
+      '-lXext',
+      '-lXfixes',
+      '-lXrender',
 #      '<!(pkg-config 2> /dev/null --libs <@(pkgconfig_libs))',
     ],
     'cflags_cc': [

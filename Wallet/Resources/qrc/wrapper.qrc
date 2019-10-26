@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/gui">
+    <file alias="art/logo.png">../art/logo.png</file>
+  </qresource>
+</RCC>
