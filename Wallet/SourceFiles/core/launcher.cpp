@@ -10,7 +10,6 @@
 #include "ui/ui_utility.h"
 #include "core/sandbox.h"
 #include "base/platform/base_platform_info.h"
-#include "base/platform/base_platform_file_utilities.h"
 #include "base/concurrent_timer.h"
 
 #include <QtWidgets/QApplication>
@@ -62,7 +61,9 @@ std::unique_ptr<Launcher> Launcher::Create(int argc, char *argv[]) {
 
 Launcher::Launcher(int argc, char *argv[])
 : _argc(argc)
-, _argv(argv) {
+, _argv(argv)
+, _baseIntegration(argc, argv) {
+	base::Integration::Set(&_baseIntegration);
 }
 
 void Launcher::init() {
@@ -93,19 +94,19 @@ QString Launcher::computeWorkingPathBase() {
 	}
 #if defined Q_OS_MAC || defined Q_OS_LINUX
 #if defined _DEBUG && !defined OS_MAC_STORE
-	return _executablePath;
+	return _baseIntegration.executableDir();
 #else // _DEBUG
 	return _appDataPath;
 #endif // !_DEBUG
 #elif defined OS_WIN_STORE // Q_OS_MAC || Q_OS_LINUX
 #ifdef _DEBUG
-	return _executablePath;
+	return _baseIntegration.executableDir();
 #else // _DEBUG
 	return _appDataPath;
 #endif // !_DEBUG
 #elif defined Q_OS_WIN
 	if (canWorkInExecutablePath()) {
-		return _executablePath;
+		return _baseIntegration.executableDir();
 	} else {
 		return _appDataPath;
 	}
@@ -113,7 +114,7 @@ QString Launcher::computeWorkingPathBase() {
 }
 
 bool Launcher::canWorkInExecutablePath() const {
-	const auto dataPath = _executablePath + "data";
+	const auto dataPath = _baseIntegration.executableDir() + "data";
 	if (!QDir(dataPath).exists() && !QDir().mkpath(dataPath)) {
 		return false;
 	} else if (QFileInfo(dataPath + "/salt").exists()) {
@@ -136,7 +137,7 @@ bool Launcher::canWorkInExecutablePath() const {
 }
 
 QString Launcher::checkPortablePath() {
-	const auto portable = _executablePath + "WalletForcePortable";
+	const auto portable = _baseIntegration.executableDir() + "WalletForcePortable";
 	return QDir(portable).exists() ? (portable + '/') : QString();
 }
 
@@ -173,37 +174,12 @@ QString Launcher::argumentsString() const {
 	return _arguments.join(' ');
 }
 
-QString Launcher::executablePath() const {
-	return _executablePath;
-}
-
-QString Launcher::executableName() const {
-	return _executableName;
-}
-
 QString Launcher::workingPath() const {
 	return _workingPath;
 }
 
 QString Launcher::openedUrl() const {
 	return _openedUrl;
-}
-
-void Launcher::initExecutablePath() {
-	const auto path = base::Platform::CurrentExecutablePath(_argc, _argv);
-	if (path.isEmpty()) {
-		return;
-	}
-	auto info = QFileInfo(path);
-	if (info.isSymLink()) {
-		info = info.symLinkTarget();
-	}
-	if (!info.exists()) {
-		return;
-	}
-	const auto dir = info.absoluteDir().absolutePath();
-	_executablePath = dir.endsWith('/') ? dir : (dir + '/');
-	_executableName = info.fileName();
 }
 
 void Launcher::initAppDataPath() {
@@ -214,7 +190,6 @@ void Launcher::initAppDataPath() {
 }
 
 void Launcher::prepareSettings() {
-	initExecutablePath();
 	initAppDataPath();
 	processArguments();
 }
@@ -239,24 +214,3 @@ int Launcher::executeApplication() {
 }
 
 } // namespace Core
-
-namespace base {
-namespace assertion {
-
-inline void log(const char *message, const char *file, int line) {
-	const auto info = QStringLiteral("%1 %2:%3"
-	).arg(message
-	).arg(file
-	).arg(line
-	);
-	const auto entry = QStringLiteral("Assertion Failed! ") + info;
-#ifdef LOG
-	LOG((entry));
-#endif // LOG
-	if (QCoreApplication::instance()) {
-		Core::Sandbox::Instance().reportAssertionViolation(info);
-	}
-}
-
-} // namespace assertion
-} // namespace base

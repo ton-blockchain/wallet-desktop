@@ -13,6 +13,7 @@
 #include "ui/effects/animations.h"
 #include "base/platform/base_platform_url_scheme.h"
 #include "base/crash_report_writer.h"
+#include "base/integration.h"
 #include "base/concurrent_timer.h"
 #include "base/single_instance.h"
 #include "base/unixtime.h"
@@ -30,8 +31,7 @@ namespace {
 base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
 		not_null<Launcher*> launcher) {
 	auto result = base::Platform::UrlSchemeDescriptor();
-	result.executable = launcher->executablePath()
-		+ launcher->executableName();
+	result.executable = base::Integration::Instance().executablePath();
 	result.protocol = "ton";
 	result.protocolName = "TON Gram Transfer Link";
 	result.shortAppName = "gramwallet";
@@ -347,12 +347,3 @@ rpl::producer<> on_main_update_requests() {
 }
 
 } // namespace crl
-
-namespace base {
-
-void EnterFromEventLoop(FnMut<void()> &&method) {
-	Core::Sandbox::Instance().customEnterFromEventLoop(
-		std::move(method));
-}
-
-} // namespace base

@@ -6,6 +6,8 @@
 //
 #pragma once
 
+#include "core/base_integration.h"
+
 namespace Core {
 
 class Launcher {
@@ -17,8 +19,6 @@ public:
 	int exec();
 
 	[[nodiscard]] QString argumentsString() const;
-	[[nodiscard]] QString executablePath() const;
-	[[nodiscard]] QString executableName() const;
 	[[nodiscard]] QString workingPath() const;
 	[[nodiscard]] QString openedUrl() const;
 
@@ -42,9 +42,8 @@ private:
 	int _argc;
 	char **_argv;
 	QStringList _arguments;
+	BaseIntegration _baseIntegration;
 
-	QString _executablePath;
-	QString _executableName;
 	QString _appDataPath;
 	QString _workingPath;
 	QString _openedUrl;
