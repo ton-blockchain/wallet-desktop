@@ -19,6 +19,8 @@
       ],
     },
     'libraries': [
+      '-Wl,-Bstatic',
+      '-lbreakpad_client',
       '-lz',
       '-lXi',
       '-lXext',
