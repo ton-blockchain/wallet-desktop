@@ -24,6 +24,9 @@
       'OTHER_LDFLAGS': [
         '-lbsm',
         '-lm',
+        '-lbase',
+        '-lcrashpad_client',
+        '-lcrashpad_util',
       ],
     },
     'include_dirs': [
@@ -38,6 +41,9 @@
           'GCC_OPTIMIZATION_LEVEL': '0',
           'PRODUCT_BUNDLE_IDENTIFIER': 'org.ton.wallet.desktop.debug',
         },
+        'library_dirs': [
+          '<(libs_loc)/crashpad/out/Debug',
+        ],
       },
       'Release': {
         'xcode_settings': {
@@ -46,7 +52,23 @@
           'GCC_OPTIMIZATION_LEVEL': 'fast',
           'PRODUCT_BUNDLE_IDENTIFIER': 'org.ton.wallet.desktop',
         },
+        'library_dirs': [
+          '<(libs_loc)/crashpad/out/Release',
+        ],
       },
     },
+    'postbuilds': [{
+      'postbuild_name': 'Force Helpers path',
+      'action': [
+        'mkdir', '-p', '${BUILT_PRODUCTS_DIR}/Wallet.app/Contents/Helpers/'
+      ],
+    }, {
+      'postbuild_name': 'Copy crashpad_client to Helpers',
+      'action': [
+        'cp',
+        '<(libs_loc)/crashpad/out/${CONFIGURATION}/crashpad_handler',
+        '${BUILT_PRODUCTS_DIR}/Wallet.app/Contents/Helpers/',
+      ],
+    }],
   }]],
 }

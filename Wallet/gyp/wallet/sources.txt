@@ -1,3 +1,5 @@
+<(src_loc)/core/base_integration.cpp
+<(src_loc)/core/base_integration.h
 <(src_loc)/core/launcher.cpp
 <(src_loc)/core/launcher.h
 <(src_loc)/core/main.cpp
