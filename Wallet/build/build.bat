@@ -17,7 +17,8 @@ echo.
 
 set "HomePath=%FullScriptPath%.."
 set "SolutionPath=%HomePath%\.."
-set "PortableFile=wallet.%AppVersionStrFull%.win.zip"
+set "SetupFile=wsetup.%AppVersionStrFull%.exe"
+set "PortableFile=wportable.%AppVersionStrFull%.zip"
 set "ReleasePath=%HomePath%\..\out\Release"
 set "DeployPath=%ReleasePath%\deploy\%AppVersionStrMajor%\%AppVersionStrFull%"
 set "SignPath=%HomePath%\..\..\DesktopPrivate\Sign.bat"
@@ -56,6 +57,17 @@ if %errorlevel% neq 0 (
   timeout /t 3
   goto sign1
 )
+
+iscc /dMyAppVersion=%AppVersionStrSmall% /dMyAppVersionZero=%AppVersionStr% /dMyAppVersionFull=%AppVersionStrFull% "/dReleasePath=%ReleasePath%" "%FullScriptPath%setup.iss"
+if %errorlevel% neq 0 goto error
+if not exist "%SetupFile%" goto error
+:sign2
+call "%SignPath%" "%SetupFile%"
+if %errorlevel% neq 0 (
+  timeout /t 3
+  goto sign2
+)
+
 if not exist "%ReleasePath%\deploy" mkdir "%ReleasePath%\deploy"
 if not exist "%ReleasePath%\deploy\%AppVersionStrMajor%" mkdir "%ReleasePath%\deploy\%AppVersionStrMajor%"
 mkdir "%DeployPath%"
@@ -65,6 +77,7 @@ if %errorlevel% neq 0 goto error
 move "%ReleasePath%\%BinaryName%.exe" "%DeployPath%\%BinaryName%\"
 xcopy "%ReleasePath%\%BinaryName%.pdb" "%DeployPath%\"
 move "%ReleasePath%\%BinaryName%.exe.pdb" "%DeployPath%\"
+move "%ReleasePath%\%SetupFile%" "%DeployPath%\"
 if %errorlevel% neq 0 goto error
 
 cd "%DeployPath%"
@@ -82,11 +95,13 @@ echo Version %AppVersionStrFull% is ready for deploy!
 echo.
 
 if not exist "%DeployPath%\%PortableFile%" goto error
+if not exist "%DeployPath%\%SetupFile%" goto error
 if not exist "%DeployPath%\%BinaryName%.pdb" goto error
 if not exist "%DeployPath%\%BinaryName%.exe.pdb" goto error
 md "%FinalDeployPath%"
 
 xcopy "%DeployPath%\%PortableFile%" "%FinalDeployPath%\" /Y
+xcopy "%DeployPath%\%SetupFile%" "%FinalDeployPath%\" /Y
 
 echo Version %AppVersionStrFull% is ready!
 
