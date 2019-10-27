@@ -51,19 +51,28 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     mkdir Libraries
     cd Libraries
 
+    SET LibrariesPath=%cd%
+
     git clone https://github.com/desktop-app/patches.git
+    git clone --branch 0.9.1 https://github.com/ericniebler/range-v3 range-v3
 
-    git clone --branch 0.5.0 https://github.com/ericniebler/range-v3 range-v3
-
-    git clone https://github.com/openssl/openssl.git
-    cd openssl
-    git checkout OpenSSL_1_0_1-stable
-    perl Configure no-shared --prefix="C:\Program Files (x86)\OpenSSL" --openssldir="C:\Program Files (x86)\Common Files\SSL" VC-WIN32
-    ms\do_ms
-    nmake -f ms\nt.mak
-    perl Configure no-shared --prefix="C:\Program Files (x86)\OpenSSL" --openssldir="C:\Program Files (x86)\Common Files\SSL" debug-VC-WIN32
-    ms\do_ms
-    nmake -f ms\nt.mak
+    git clone https://github.com/openssl/openssl.git openssl_1_1_1
+    cd openssl_1_1_1
+    git checkout OpenSSL_1_1_1-stable
+    perl Configure no-shared debug-VC-WIN32
+    nmake
+    mkdir out32.dbg
+    move libcrypto.lib out32.dbg
+    move libssl.lib out32.dbg
+    move ossl_static.pdb out32.dbg\ossl_static
+    nmake clean
+    move out32.dbg\ossl_static out32.dbg\ossl_static.pdb
+    perl Configure no-shared VC-WIN32
+    nmake
+    mkdir out32
+    move libcrypto.lib out32
+    move libssl.lib out32
+    move ossl_static.pdb out32
     cd ..
 
     git clone https://github.com/desktop-app/zlib.git
@@ -72,24 +81,37 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     msbuild zlibstat.vcxproj /property:Configuration=ReleaseWithoutAsm
     cd ..\..\..\..
 
-    git clone git://code.qt.io/qt/qt5.git qt5_6_2
-    cd qt5_6_2
+    git clone https://github.com/google/breakpad
+    cd breakpad
+    git checkout a1dbcdcb43
+    git apply ../patches/breakpad.diff
+    cd src
+    git clone https://github.com/google/googletest testing
+    cd client\windows
+    gyp --no-circular-check breakpad_client.gyp --format=ninja
+    cd ..\..
+    ninja -C out/Debug common crash_generation_client exception_handler
+    ninja -C out/Release common crash_generation_client exception_handler
+    cd tools\windows\dump_syms
+    gyp dump_syms.gyp
+    msbuild dump_syms.vcxproj /property:Configuration=Release
+    cd ..\..\..\..\..
+
+    git clone git://code.qt.io/qt/qt5.git qt_5_12_5
+    cd qt_5_12_5
     perl init-repository --module-subset=qtbase,qtimageformats
-    git checkout v5.6.2
-    cd qtimageformats
-    git checkout v5.6.2
-    cd ..\qtbase
-    git checkout v5.6.2
-    git apply ../../patches/qtbase_5_6_2.diff
+    git checkout v5.12.5
+    git submodule update qtbase
+    git submodule update qtimageformats
+    cd qtbase
+    git apply ../../patches/qtbase_5_12_5.diff
     cd ..
 
-    configure -debug-and-release -force-debug-info -opensource -confirm-license -static -I "%cd%\..\openssl\inc32" -no-opengl -openssl-linked OPENSSL_LIBS_DEBUG="%cd%\..\openssl\out32.dbg\ssleay32.lib %cd%\..\openssl\out32.dbg\libeay32.lib" OPENSSL_LIBS_RELEASE="%cd%\..\openssl\out32\ssleay32.lib %cd%\..\openssl\out32\libeay32.lib" -mp -nomake examples -nomake tests -platform win32-msvc2015
+    configure -prefix "%LibrariesPath%\Qt-5.12.5" -debug-and-release -force-debug-info -opensource -confirm-license -static -static-runtime -I "%LibrariesPath%\openssl_1_1_1\include" -no-opengl -openssl-linked OPENSSL_LIBS_DEBUG="%LibrariesPath%\openssl_1_1_1\out32.dbg\libssl.lib %LibrariesPath%\openssl_1_1_1\out32.dbg\libcrypto.lib Ws2_32.lib Gdi32.lib Advapi32.lib Crypt32.lib User32.lib" OPENSSL_LIBS_RELEASE="%LibrariesPath%\openssl_1_1_1\out32\libssl.lib %LibrariesPath%\openssl_1_1_1\out32\libcrypto.lib Ws2_32.lib Gdi32.lib Advapi32.lib Crypt32.lib User32.lib" -mp -nomake examples -nomake tests -platform win32-msvc
 
     jom -j4
     jom -j4 install
     cd ..
-
-    SET LibrariesPath=%cd%
 
     git clone https://github.com/ton-blockchain/ton.git
     cd ton
@@ -98,12 +120,12 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     git submodule update third-party/crc32c
     mkdir build-debug
     cd build-debug
-    cmake -A Win32 -DTON_USE_ROCKSDB=OFF -DTON_USE_ABSEIL=OFF -DTON_ARCH= -DTON_ONLY_TONLIB=ON -DOPENSSL_FOUND=1 -DOPENSSL_INCLUDE_DIR=%LibrariesPath%\openssl\inc32 -DOPENSSL_CRYPTO_LIBRARY=%LibrariesPath%\openssl\out32.dbg\libeay32.lib -DZLIB_FOUND=1 -DZLIB_INCLUDE_DIR=%LibrariesPath%\zlib -DZLIB_LIBRARIES=%LibrariesPath%\zlib\contrib\vstudio\vc14\x86\ZlibStatDebug\zlibstat.lib -DCMAKE_CXX_FLAGS_DEBUG="/DZLIB_WINAPI /DNDEBUG /MTd /Zi /Od /Ob0" -DCMAKE_C_FLAGS_DEBUG="/DNDEBUG /MTd /Zi /Od /Ob0" -DCMAKE_EXE_LINKER_FLAGS="/SAFESEH:NO" ..
+    cmake -A Win32 -DTON_USE_ROCKSDB=OFF -DTON_USE_ABSEIL=OFF -DTON_ARCH= -DTON_ONLY_TONLIB=ON -DOPENSSL_FOUND=1 -DOPENSSL_INCLUDE_DIR=%LibrariesPath%\openssl_1_1_1\include -DOPENSSL_CRYPTO_LIBRARY=%LibrariesPath%\openssl_1_1_1\out32.dbg\libcrypto.lib -DZLIB_FOUND=1 -DZLIB_INCLUDE_DIR=%LibrariesPath%\zlib -DZLIB_LIBRARY=%LibrariesPath%\zlib\contrib\vstudio\vc14\x86\ZlibStatDebug\zlibstat.lib -DCMAKE_CXX_FLAGS_DEBUG="/DZLIB_WINAPI /DNDEBUG /MTd /Zi /Od /Ob0" -DCMAKE_C_FLAGS_DEBUG="/DNDEBUG /MTd /Zi /Od /Ob0" -DCMAKE_EXE_LINKER_FLAGS="/SAFESEH:NO Ws2_32.lib Gdi32.lib Advapi32.lib Crypt32.lib User32.lib" ..
     cmake --build . --target tonlib --config Debug
     cd ..
     mkdir build
     cd build
-    cmake -A Win32 -DTON_USE_ROCKSDB=OFF -DTON_USE_ABSEIL=OFF -DTON_ARCH= -DTON_ONLY_TONLIB=ON -DOPENSSL_FOUND=1 -DOPENSSL_INCLUDE_DIR=%LibrariesPath%\openssl\inc32 -DOPENSSL_CRYPTO_LIBRARY=%LibrariesPath%\openssl\out32\libeay32.lib -DZLIB_FOUND=1 -DZLIB_INCLUDE_DIR=%LibrariesPath%\zlib -DZLIB_LIBRARIES=%LibrariesPath%\zlib\contrib\vstudio\vc14\x86\ZlibStatReleaseWithoutAsm\zlibstat.lib -DCMAKE_CXX_FLAGS_RELEASE="/DZLIB_WINAPI /MT /Ob2" -DCMAKE_C_FLAGS_RELEASE="/MT /Ob2" -DCMAKE_EXE_LINKER_FLAGS="/SAFESEH:NO" ..
+    cmake -A Win32 -DTON_USE_ROCKSDB=OFF -DTON_USE_ABSEIL=OFF -DTON_ARCH= -DTON_ONLY_TONLIB=ON -DOPENSSL_FOUND=1 -DOPENSSL_INCLUDE_DIR=%LibrariesPath%\openssl_1_1_1\include -DOPENSSL_CRYPTO_LIBRARY=%LibrariesPath%\openssl_1_1_1\out32\libcrypto.lib -DZLIB_FOUND=1 -DZLIB_INCLUDE_DIR=%LibrariesPath%\zlib -DZLIB_LIBRARY=%LibrariesPath%\zlib\contrib\vstudio\vc14\x86\ZlibStatReleaseWithoutAsm\zlibstat.lib -DCMAKE_CXX_FLAGS_RELEASE="/DZLIB_WINAPI /MT /Ob2" -DCMAKE_C_FLAGS_RELEASE="/MT /Ob2" -DCMAKE_EXE_LINKER_FLAGS="/SAFESEH:NO Ws2_32.lib Gdi32.lib Advapi32.lib Crypt32.lib User32.lib" ..
     cmake --build . --target tonlib --config Release
     cd ../..
 
