@@ -33,6 +33,8 @@ gypArguments.append('--depth=.')
 gypArguments.append('--generator-output=..')
 gypArguments.append('-Goutput_dir=../out')
 gypArguments.append('-Dofficial_build_target=' + officialTarget)
+gypArguments.append('-Dprivate_name=wallet')
+gypArguments.append('-Dpublic_key_loc=../SourceFiles/core')
 
 if sys.platform == 'win32':
     gypFormats.append('ninja')

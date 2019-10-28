@@ -55,3 +55,6 @@
 [submodule "Wallet/lib_qr"]
 	path = Wallet/lib_qr
 	url = https://github.com/desktop-app/lib_qr.git
+[submodule "Wallet/lib_updater"]
+	path = Wallet/lib_updater
+	url = https://github.com/desktop-app/lib_updater.git
