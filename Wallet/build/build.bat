@@ -17,6 +17,7 @@ echo.
 
 set "HomePath=%FullScriptPath%.."
 set "SolutionPath=%HomePath%\.."
+set "UpdateFile=wupdate-win-%AppVersion%"
 set "SetupFile=wsetup.%AppVersionStrFull%.exe"
 set "PortableFile=wportable.%AppVersionStrFull%.zip"
 set "ReleasePath=%HomePath%\..\out\Release"
@@ -68,6 +69,11 @@ if %errorlevel% neq 0 (
   goto sign2
 )
 
+call update_packer.exe --version %VersionForPacker% --path %BinaryName%.exe
+if %errorlevel% neq 0 goto error
+move "%ReleasePath%\packed_update%AppVersion%" "%ReleasePath%\%UpdateFile%"
+if %errorlevel% neq 0 goto error
+
 if not exist "%ReleasePath%\deploy" mkdir "%ReleasePath%\deploy"
 if not exist "%ReleasePath%\deploy\%AppVersionStrMajor%" mkdir "%ReleasePath%\deploy\%AppVersionStrMajor%"
 mkdir "%DeployPath%"
@@ -78,6 +84,7 @@ move "%ReleasePath%\%BinaryName%.exe" "%DeployPath%\%BinaryName%\"
 xcopy "%ReleasePath%\%BinaryName%.pdb" "%DeployPath%\"
 move "%ReleasePath%\%BinaryName%.exe.pdb" "%DeployPath%\"
 move "%ReleasePath%\%SetupFile%" "%DeployPath%\"
+move "%ReleasePath%\%UpdateFile%" "%DeployPath%\"
 if %errorlevel% neq 0 goto error
 
 cd "%DeployPath%"
@@ -88,18 +95,20 @@ move "%DeployPath%\%BinaryName%\%BinaryName%.exe" "%DeployPath%\"
 rmdir "%DeployPath%\%BinaryName%"
 if %errorlevel% neq 0 goto error
 
-set "FinalDeployPath=%FinalReleasePath%\%AppVersionStrMajor%\%AppVersionStrFull%\tsetup"
+set "FinalDeployPath=%FinalReleasePath%\%AppVersionStrMajor%\%AppVersionStrFull%\win"
 
 echo.
 echo Version %AppVersionStrFull% is ready for deploy!
 echo.
 
+if not exist "%DeployPath%\%UpdateFile%" goto error
 if not exist "%DeployPath%\%PortableFile%" goto error
 if not exist "%DeployPath%\%SetupFile%" goto error
 if not exist "%DeployPath%\%BinaryName%.pdb" goto error
 if not exist "%DeployPath%\%BinaryName%.exe.pdb" goto error
 md "%FinalDeployPath%"
 
+xcopy "%DeployPath%\%UpdateFile%" "%FinalDeployPath%\" /Y
 xcopy "%DeployPath%\%PortableFile%" "%FinalDeployPath%\" /Y
 xcopy "%DeployPath%\%SetupFile%" "%FinalDeployPath%\" /Y
 
