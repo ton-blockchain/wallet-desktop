@@ -25,11 +25,15 @@ public:
 	virtual ~Launcher() = default;
 
 private:
+	enum class Action {
+		Run,
+		Cleanup,
+	};
 	void prepareSettings();
 	void processArguments();
-	void initExecutablePath();
 	void initAppDataPath();
 	void initWorkingPath();
+	void setupScale();
 	[[nodiscard]] QString checkPortablePath();
 	[[nodiscard]] QString computeWorkingPathBase();
 	[[nodiscard]] bool canWorkInExecutablePath() const;
@@ -37,11 +41,13 @@ private:
 	QStringList readArguments(int argc, char *argv[]) const;
 
 	void init();
+	void cleanupInstallation();
 	int executeApplication();
 
-	int _argc;
-	char **_argv;
+	int _argc = 0;
+	char **_argv = nullptr;
 	QStringList _arguments;
+	Action _action = Action::Run;
 	BaseIntegration _baseIntegration;
 
 	QString _appDataPath;

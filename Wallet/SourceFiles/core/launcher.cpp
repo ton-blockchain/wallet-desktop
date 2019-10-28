@@ -68,19 +68,8 @@ Launcher::Launcher(int argc, char *argv[])
 
 void Launcher::init() {
 	_arguments = readArguments(_argc, _argv);
-
 	QApplication::setApplicationName("Gram Wallet");
-
 	prepareSettings();
-
-#ifdef Q_OS_MAC
-	// macOS Retina display support is working fine, others are not.
-	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling, false);
-#else // Q_OS_MAC
-	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
-#endif // Q_OS_MAC
-	Ui::DisableCustomScaling();
-
 	initWorkingPath();
 }
 
@@ -137,12 +126,19 @@ bool Launcher::canWorkInExecutablePath() const {
 }
 
 QString Launcher::checkPortablePath() {
-	const auto portable = _baseIntegration.executableDir() + "WalletForcePortable";
+	const auto portable = _baseIntegration.executableDir()
+		+ "WalletForcePortable";
 	return QDir(portable).exists() ? (portable + '/') : QString();
 }
 
 int Launcher::exec() {
 	init();
+
+	if (_action == Action::Cleanup) {
+		cleanupInstallation();
+		return 0;
+	}
+	setupScale();
 
 	auto options = QJsonObject();
 	const auto tempFontConfigPath = QStandardPaths::writableLocation(
@@ -157,6 +153,19 @@ int Launcher::exec() {
 	Platform::Finish();
 
 	return result;
+}
+
+void Launcher::cleanupInstallation() {
+}
+
+void Launcher::setupScale() {
+#ifdef Q_OS_MAC
+	// macOS Retina display support is working fine, others are not.
+	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling, false);
+#else // Q_OS_MAC
+	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
+#endif // Q_OS_MAC
+	Ui::DisableCustomScaling();
 }
 
 QStringList Launcher::readArguments(int argc, char *argv[]) const {
@@ -197,7 +206,9 @@ void Launcher::prepareSettings() {
 void Launcher::processArguments() {
 	auto nextUrl = false;
 	for (const auto &argument : _arguments) {
-		if (nextUrl) {
+		if (argument == "cleanup") {
+			_action = Action::Cleanup;
+		} else if (nextUrl) {
 			_openedUrl = argument;
 		} else if (argument == "--") {
 			nextUrl = true;
