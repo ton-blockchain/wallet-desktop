@@ -4,6 +4,15 @@ pushd `dirname $0` > /dev/null
 FullScriptPath=`pwd`
 popd > /dev/null
 
+if [ ! -d "$FullScriptPath/../../../DesktopPrivate" ]; then
+  echo ""
+  echo "This script is for building the official version of Gram Wallet."
+  echo ""
+  echo "For building custom versions please visit the build instructions page at:"
+  echo "https://github.com/ton-blockchain/wallet/#build-instructions"
+  exit
+fi
+
 Error () {
   cd $FullExecPath
   echo "$1"
@@ -23,18 +32,21 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
   eval $1="$2"
 done < "$FullScriptPath/version"
 
+VersionForPacker="$AppVersion"
 AppVersionStrFull="$AppVersionStr"
 
 echo ""
 HomePath="$FullScriptPath/.."
 if [ "$BuildTarget" == "linux" ]; then
   echo "Building version $AppVersionStrFull for Linux 64bit.."
-  SetupFile="wallet.$AppVersionStrFull.linux.tar.xz"
+  SetupFile="wsetup.$AppVersionStrFull.tar.xz"
+  UpdateFile="wupdate-linux-$AppVersion"
   ReleasePath="$HomePath/../out/Release"
   BinaryName="Wallet"
 elif [ "$BuildTarget" == "linux32" ]; then
   echo "Building version $AppVersionStrFull for Linux 32bit.."
-  SetupFile="wallet.$AppVersionStrFull.linux32.tar.xz"
+  SetupFile="wsetup32.$AppVersionStrFull.tar.xz"
+  UpdateFile="wupdate-linux32-$AppVersion"
   ReleasePath="$HomePath/../out/Release"
   BinaryName="Wallet"
 elif [ "$BuildTarget" == "mac" ]; then
@@ -42,7 +54,8 @@ elif [ "$BuildTarget" == "mac" ]; then
   if [ "$AC_USERNAME" == "" ]; then
     Error "AC_USERNAME not found!"
   fi
-  SetupFile="wallet.$AppVersionStrFull.mac.zip"
+  SetupFile="wsetup.$AppVersionStrFull.dmg"
+  UpdateFile="wupdate-mac-$AppVersion"
   ReleasePath="$HomePath/../out/Release"
   BinaryName="Wallet"
 else
@@ -56,7 +69,7 @@ fi
 DeployPath="$ReleasePath/deploy/$AppVersionStrMajor/$AppVersionStrFull"
 
 if [ "$BuildTarget" == "linux" ] || [ "$BuildTarget" == "linux32" ]; then
-  BackupPath="/media/psf/backup/wallet/$AppVersionStrMajor/$AppVersionStrFull/t$BuildTarget"
+  BackupPath="/media/psf/backup/wallet/$AppVersionStrMajor/$AppVersionStrFull/$BuildTarget"
   if [ ! -d "/media/psf/backup" ]; then
     Error "Backup folder not found!"
   fi
@@ -99,6 +112,12 @@ if [ "$BuildTarget" == "linux" ] || [ "$BuildTarget" == "linux32" ]; then
   chrpath -d "$ReleasePath/$BinaryName"
   echo "Done!"
 
+  echo "Preparing version $AppVersionStrFull, executing update_packer.."
+  cd "$ReleasePath"
+  "./update_packer" --version $VersionForPacker --path "$BinaryName"
+  mv "packed_update$VersionForPacker" "$UpdateFile"
+  echo "Packer done!"
+
   if [ ! -d "$ReleasePath/deploy" ]; then
     mkdir "$ReleasePath/deploy"
   fi
@@ -111,15 +130,17 @@ if [ "$BuildTarget" == "linux" ] || [ "$BuildTarget" == "linux32" ]; then
   mkdir "$DeployPath"
   mkdir "$DeployPath/$BinaryName"
   mv "$ReleasePath/$BinaryName" "$DeployPath/$BinaryName/"
+  mv "$ReleasePath/$UpdateFile" "$DeployPath/"
   cd "$DeployPath"
   tar -cJvf "$SetupFile" "$BinaryName/"
 
   mkdir -p $BackupPath
   cp "$SetupFile" "$BackupPath/"
+  cp "$UpdateFile" "$BackupPath/"
 fi
 
 if [ "$BuildTarget" == "mac" ]; then
-  BackupPath="$HomePath/../../../Projects/backup/wallet/$AppVersionStrMajor/$AppVersionStrFull"
+  BackupPath="$HomePath/../../../Projects/backup/wallet/$AppVersionStrMajor/$AppVersionStrFull/mac"
   if [ ! -d "$HomePath/../../../Projects/backup" ]; then
     Error "Backup path not found!"
   fi
@@ -162,18 +183,18 @@ if [ "$BuildTarget" == "mac" ]; then
   fi
 
   cd "$ReleasePath"
-  rm -rf "$ReleasePath/AlphaTemp"
-  mkdir "$ReleasePath/AlphaTemp"
-  mkdir "$ReleasePath/AlphaTemp/$BinaryName"
-  cp -r "$ReleasePath/$BinaryName.app" "$ReleasePath/AlphaTemp/$BinaryName/"
-  cd "$ReleasePath/AlphaTemp"
-  zip -r "$SetupFile" "$BinaryName"
-  mv "$SetupFile" "$ReleasePath/"
-  cd "$ReleasePath"
+
+  cp -f wsetup_template.dmg wsetup.temp.dmg
+  TempDiskPath=`hdiutil attach -nobrowse -noautoopenrw -readwrite wsetup.temp.dmg | awk -F "\t" 'END {print $3}'`
+  cp -R "./$BinaryName.app" "$TempDiskPath/"
+  bless --folder "$TempDiskPath/" --openfolder "$TempDiskPath/"
+  hdiutil detach "$TempDiskPath"
+  hdiutil convert wsetup.temp.dmg -format UDZO -imagekey zlib-level=9 -ov -o "$SetupFile"
+  rm wsetup.temp.dmg
 
   echo "Beginning notarization process."
   set +e
-  xcrun altool --notarize-app --primary-bundle-id "org.ton.TonDesktopWallet" --username "$AC_USERNAME" --password "@keychain:AC_PASSWORD" --file "$SetupFile" 2> request_uuid.txt
+  xcrun altool --notarize-app --primary-bundle-id "org.ton.wallet.desktop" --username "$AC_USERNAME" --password "@keychain:AC_PASSWORD" --file "$SetupFile" 2> request_uuid.txt
   set -e
   while IFS='' read -r line || [[ -n "$line" ]]; do
     Prefix=$(echo $line | cut -d' ' -f 1)
@@ -219,6 +240,7 @@ if [ "$BuildTarget" == "mac" ]; then
     fi
     Error "Notarization FAILED."
   fi
+  echo "Notarization success!"
   rm request_result.txt
 
   if [ "$LogFile" != "" ]; then
@@ -226,17 +248,16 @@ if [ "$BuildTarget" == "mac" ]; then
     curl $LogFile > request_log.txt
   fi
 
+  echo "Stable on $ReleasePath/$BinaryName.app..."
   xcrun stapler staple "$ReleasePath/$BinaryName.app"
+  echo "Stable on $ReleasePath/$SetupFile..."
+  xcrun stapler staple "$ReleasePath/$SetupFile"
 
-  rm -rf "$ReleasePath/AlphaTemp"
-  mkdir "$ReleasePath/AlphaTemp"
-  mkdir "$ReleasePath/AlphaTemp/$BinaryName"
-  cp -r "$ReleasePath/$BinaryName.app" "$ReleasePath/AlphaTemp/$BinaryName/"
-  cd "$ReleasePath/AlphaTemp"
-  zip -r "$SetupFile" "$BinaryName"
-  mv "$SetupFile" "$ReleasePath/"
+  echo "Running update packer..."
   cd "$ReleasePath"
-  echo "Archive re-created."
+  "./update_packer" --version $VersionForPacker --path "$BinaryName.app" 
+  mv "packed_update$VersionForPacker" "$UpdateFile"
+  echo "Packer done!"
 
   if [ ! -d "$ReleasePath/deploy" ]; then
     mkdir "$ReleasePath/deploy"
@@ -255,10 +276,12 @@ if [ "$BuildTarget" == "mac" ]; then
     rm "$ReleasePath/$BinaryName.app/Contents/MacOS/$BinaryName"
     rm "$ReleasePath/$BinaryName.app/Contents/Info.plist"
     rm -rf "$ReleasePath/$BinaryName.app/Contents/_CodeSignature"
+    mv "$ReleasePath/$UpdateFile" "$DeployPath/"
     mv "$ReleasePath/$SetupFile" "$DeployPath/"
 
-    mkdir -p "$BackupPath/tmac"
-    cp "$DeployPath/$SetupFile" "$BackupPath/tmac/"
+    mkdir -p "$BackupPath"
+    cp "$DeployPath/$UpdateFile" "$BackupPath/"
+    cp "$DeployPath/$SetupFile" "$BackupPath/"
   fi
 fi
 

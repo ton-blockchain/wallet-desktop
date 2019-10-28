@@ -3,6 +3,15 @@ setlocal enabledelayedexpansion
 set "FullScriptPath=%~dp0"
 set "FullExecPath=%cd%"
 
+if not exist "%FullScriptPath%..\..\..\DesktopPrivate" (
+  echo.
+  echo This script is for building the official version of Gram Wallet.
+  echo.
+  echo For building custom versions please visit the build instructions page at:
+  echo https://github.com/ton-blockchain/wallet/#build-instructions
+  exit /b
+)
+
 FOR /F "tokens=1* delims= " %%i in (%FullScriptPath%target) do set "BuildTarget=%%i"
 
 FOR /F "tokens=1,2* delims= " %%i in (%FullScriptPath%version) do set "%%i=%%j"
