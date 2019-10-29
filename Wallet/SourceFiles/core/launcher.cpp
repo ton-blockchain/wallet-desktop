@@ -130,7 +130,7 @@ void Launcher::startUpdateChecker() {
 		_restartingArguments = _arguments.mid(1);
 		restartForUpdater();
 	} else {
-		_updateChecker->start(false);
+		_updateChecker->start(Updater::Instance::Start::Now);
 	}
 }
 
@@ -139,6 +139,12 @@ void Launcher::restartForUpdater() {
 
 	_restartingForUpdater = true;
 	Sandbox::Instance().quit();
+}
+
+not_null<Updater::Instance*> Launcher::updateChecker() {
+	Expects(_updateChecker != nullptr);
+
+	return _updateChecker.get();
 }
 
 bool Launcher::canWorkInExecutablePath() const {

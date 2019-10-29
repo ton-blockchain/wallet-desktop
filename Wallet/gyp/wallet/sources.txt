@@ -14,6 +14,8 @@
 <(src_loc)/wallet/phrases.h
 <(src_loc)/wallet/ton_default_config.cpp
 <(src_loc)/wallet/ton_default_config.h
+<(src_loc)/wallet/update_info_provider.cpp
+<(src_loc)/wallet/update_info_provider.h
 
 platforms: win
 <(res_loc)/win/Wallet.rc

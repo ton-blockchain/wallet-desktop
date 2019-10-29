@@ -27,6 +27,7 @@ namespace Wallet {
 class Window;
 class Intro;
 class Info;
+class UpdateInfo;
 
 class Application final : public base::has_weak_ptr {
 public:
@@ -44,10 +45,12 @@ private:
 	void criticalError(const QString &text);
 	void handleLaunchCommand();
 	bool handleCommand(const QByteArray &command);
+	not_null<UpdateInfo*> walletUpdateInfo();
 
 	const QString _path;
 	const std::unique_ptr<Ton::Wallet> _wallet;
 	std::unique_ptr<Wallet::Window> _window;
+	std::unique_ptr<Wallet::UpdateInfo> _updateInfo;
 	QByteArray _launchCommand;
 
 	rpl::lifetime _lifetime;

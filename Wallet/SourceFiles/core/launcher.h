@@ -29,6 +29,7 @@ public:
 
 	void startUpdateChecker();
 	void restartForUpdater();
+	[[nodiscard]] not_null<Updater::Instance*> updateChecker();
 
 	virtual ~Launcher() = default;
 

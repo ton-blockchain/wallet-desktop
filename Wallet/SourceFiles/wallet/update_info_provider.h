@@ -1,0 +1,47 @@
+// This file is part of TON Desktop Wallet,
+// a desktop application for the TON Blockchain project.
+//
+// For license and copyright information please follow this link:
+// https://github.com/ton-blockchain/wallet/blob/master/LEGAL
+//
+#pragma once
+
+#include "wallet/wallet_update_info.h"
+
+namespace Updater {
+class Instance;
+} // namespace Updater
+
+namespace Wallet {
+
+class UpdateInfoProvider : public UpdateInfo {
+public:
+	UpdateInfoProvider(
+		not_null<Updater::Instance*> updater,
+		Fn<void()> install);
+
+	rpl::producer<> checking() override;
+	rpl::producer<> isLatest() override;
+	rpl::producer<UpdateProgress> progress() override;
+	rpl::producer<> failed() override;
+	rpl::producer<> ready() override;
+
+	UpdateState state() override;
+	int64 already() override;
+	int64 size() override;
+
+	void toggle(bool enabled) override;
+	void test() override;
+	void install() override;
+
+	bool toggled() override;
+	int currentVersion() override;
+
+private:
+	const not_null<Updater::Instance*> _updater;
+	Fn<void()> _install;
+	bool _toggled = true;
+
+};
+
+} // namespace Wallet

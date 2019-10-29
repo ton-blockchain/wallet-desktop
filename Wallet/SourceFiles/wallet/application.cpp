@@ -8,6 +8,7 @@
 
 #include "wallet/wallet_window.h"
 #include "wallet/ton_default_config.h"
+#include "wallet/update_info_provider.h"
 #include "ton/ton_config.h"
 #include "ton/ton_state.h"
 #include "ton/ton_wallet.h"
@@ -18,6 +19,7 @@
 #include "ui/text/text_utilities.h"
 #include "ui/rp_widget.h"
 #include "core/sandbox.h"
+#include "core/launcher.h"
 #include "base/platform/base_platform_info.h"
 #include "base/event_filter.h"
 #include "base/call_delayed.h"
@@ -88,6 +90,13 @@ bool Application::handleCommand(const QByteArray &command) {
 	return false;
 }
 
+not_null<UpdateInfo*> Application::walletUpdateInfo() {
+	_updateInfo = std::make_unique<UpdateInfoProvider>(
+		Core::Sandbox::Instance().launcher()->updateChecker(),
+		[=] { Core::Sandbox::Instance().launcher()->restartForUpdater(); });
+	return _updateInfo.get();
+}
+
 void Application::openWallet() {
 	auto opened = [=](Ton::Result<> result) {
 		if (!result) {
@@ -97,7 +106,9 @@ void Application::openWallet() {
 					+ _path);
 			criticalError(text);
 		} else {
-			_window = std::make_unique<Wallet::Window>(_wallet.get());
+			_window = std::make_unique<Wallet::Window>(
+				_wallet.get(),
+				walletUpdateInfo());
 			handleLaunchCommand();
 		}
 	};
