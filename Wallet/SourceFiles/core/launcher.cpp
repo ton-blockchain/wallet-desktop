@@ -61,6 +61,19 @@ char **FilteredCommandLineArguments::values() {
 	return _arguments;
 }
 
+Updater::InfoForRegistry GetInfoForRegistry() {
+	auto result = Updater::InfoForRegistry();
+	result.fullName = "Gram Wallet";
+	result.guid = "5ED3C1CA-9AA7-4884-B01A-21D3A0CD0FB4";
+	result.helpLink
+		= result.supportLink
+		= result.updateLink
+		= "https://desktop.ton.org";
+	result.iconGroup = "Gram Wallet";
+	result.publisher = "Telegram FZ-LLC";
+	return result;
+}
+
 } // namespace
 
 std::unique_ptr<Launcher> Launcher::Create(int argc, char *argv[]) {
@@ -160,7 +173,7 @@ QString Launcher::checkPortablePath() {
 int Launcher::exec() {
 	processArguments();
 	if (_action == Action::InstallUpdate) {
-		return Updater::Install(_arguments);
+		return Updater::Install(_arguments, GetInfoForRegistry());
 	}
 	init();
 	if (_action == Action::Cleanup) {
