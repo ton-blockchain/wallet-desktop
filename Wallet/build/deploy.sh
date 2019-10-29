@@ -126,16 +126,13 @@ fi
 
 declare -a Files
 if [ "$DeployMac" == "1" ]; then
-#  Files+=("mac/$MacUpdateFile" "mac/$MacSetupFile")
-  Files+=("mac/$MacUpdateFile")
+  Files+=("mac/$MacUpdateFile" "mac/$MacSetupFile")
 fi
 if [ "$DeployWin" == "1" ]; then
-#  Files+=("win/$WinUpdateFile" "win/$WinPortableFile" "win/$WinSetupFile")
-  Files+=("win/$WinUpdateFile")
+  Files+=("win/$WinUpdateFile" "win/$WinPortableFile" "win/$WinSetupFile")
 fi
 if [ "$DeployLinux" == "1" ]; then
-#  Files+=("linux/$LinuxUpdateFile" "linux/$LinuxSetupFile")
-  Files+=("linux/$LinuxUpdateFile")
+  Files+=("linux/$LinuxUpdateFile" "linux/$LinuxSetupFile")
 fi
 if [ "$DeployLinux32" == "1" ]; then
   Files+=("linux32/$Linux32UpdateFile" "linux32/$Linux32SetupFile")
