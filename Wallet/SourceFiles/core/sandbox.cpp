@@ -101,6 +101,9 @@ void Sandbox::run() {
 	installNativeEventFilter(this);
 
 	_launcher->startUpdateChecker();
+	if (_launcher->restartingForUpdater()) {
+		return;
+	}
 
 	_crashReportWriter = std::make_unique<base::CrashReportWriter>(
 		_launcher->workingPath() + "crashes/");

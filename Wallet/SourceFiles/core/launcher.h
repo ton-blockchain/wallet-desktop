@@ -30,6 +30,7 @@ public:
 
 	void startUpdateChecker();
 	void restartForUpdater();
+	[[nodiscard]] bool restartingForUpdater() const;
 	[[nodiscard]] not_null<Updater::Instance*> updateChecker();
 
 private:
