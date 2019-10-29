@@ -9,6 +9,8 @@
 #include "ui/main_queue_processor.h"
 #include "ui/ui_utility.h"
 #include "core/sandbox.h"
+#include "core/version.h"
+#include "updater/updater_instance.h"
 #include "base/platform/base_platform_info.h"
 #include "base/concurrent_timer.h"
 
@@ -19,6 +21,12 @@
 
 namespace Core {
 namespace {
+
+// 8 hour min time between update check requests.
+constexpr auto kUpdaterDelayConstPart = 8 * 3600;
+
+// 8 hour max - min time between update check requests.
+constexpr auto kUpdaterDelayRandPart = 8 * 3600;
 
 class FilteredCommandLineArguments {
 public:
@@ -67,9 +75,8 @@ Launcher::Launcher(int argc, char *argv[])
 }
 
 void Launcher::init() {
-	_arguments = readArguments(_argc, _argv);
 	QApplication::setApplicationName("Gram Wallet");
-	prepareSettings();
+	initAppDataPath();
 	initWorkingPath();
 }
 
@@ -102,6 +109,25 @@ QString Launcher::computeWorkingPathBase() {
 #endif // Q_OS_MAC || Q_OS_LINUX || Q_OS_WINRT || OS_WIN_STORE
 }
 
+void Launcher::startUpdateChecker() {
+	_updateChecker = std::make_unique<Updater::Instance>(
+		updaterSettings(),
+		AppVersion);
+	if (_updateChecker->readyToRestart()) {
+		_restartingArguments = _arguments.mid(1);
+		restartForUpdater();
+	} else {
+		_updateChecker->start(false);
+	}
+}
+
+void Launcher::restartForUpdater() {
+	Expects(_updateChecker != nullptr);
+
+	_restartingForUpdater = true;
+	Sandbox::Instance().quit();
+}
+
 bool Launcher::canWorkInExecutablePath() const {
 	const auto dataPath = _baseIntegration.executableDir() + "data";
 	if (!QDir(dataPath).exists() && !QDir().mkpath(dataPath)) {
@@ -132,8 +158,11 @@ QString Launcher::checkPortablePath() {
 }
 
 int Launcher::exec() {
+	processArguments();
+	if (_action == Action::InstallUpdate) {
+		return Updater::Install(_arguments);
+	}
 	init();
-
 	if (_action == Action::Cleanup) {
 		cleanupInstallation();
 		return 0;
@@ -151,6 +180,15 @@ int Launcher::exec() {
 	auto result = executeApplication();
 
 	Platform::Finish();
+
+	auto restart = (_updateChecker && _restartingForUpdater)
+		? _updateChecker->restarter()
+		: nullptr;
+	_updateChecker = nullptr;
+
+	if (restart) {
+		restart("Wallet", _restartingArguments);
+	}
 
 	return result;
 }
@@ -198,22 +236,31 @@ void Launcher::initAppDataPath() {
 	_appDataPath = absolute.endsWith('/') ? absolute : (absolute + '/');
 }
 
-void Launcher::prepareSettings() {
-	initAppDataPath();
-	processArguments();
-}
-
 void Launcher::processArguments() {
+	_arguments = readArguments(_argc, _argv);
+
 	auto nextUrl = false;
 	for (const auto &argument : _arguments) {
 		if (argument == "cleanup") {
 			_action = Action::Cleanup;
+		} else if (argument == "installupdate") {
+			_action = Action::InstallUpdate;
+			break;
 		} else if (nextUrl) {
 			_openedUrl = argument;
 		} else if (argument == "--") {
 			nextUrl = true;
 		}
 	}
+}
+
+Updater::Settings Launcher::updaterSettings() const {
+	auto result = Updater::Settings();
+	result.basePath = workingPath();
+	result.url = "https://desktop-updates.ton.org/current";
+	result.delayConstPart = kUpdaterDelayConstPart;
+	result.delayRandPart = kUpdaterDelayRandPart;
+	return result;
 }
 
 int Launcher::executeApplication() {

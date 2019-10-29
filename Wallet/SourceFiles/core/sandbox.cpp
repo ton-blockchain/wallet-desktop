@@ -18,6 +18,7 @@
 #include "base/single_instance.h"
 #include "base/unixtime.h"
 #include "base/timer.h"
+#include "updater/updater_instance.h"
 
 #include <QtWidgets/QDesktopWidget>
 #include <QtGui/QScreen>
@@ -98,6 +99,8 @@ void Sandbox::run() {
 	style::internal::StartFonts();
 	setupScreenScale();
 	installNativeEventFilter(this);
+
+	_launcher->startUpdateChecker();
 
 	_crashReportWriter = std::make_unique<base::CrashReportWriter>(
 		_launcher->workingPath() + "crashes/");

@@ -132,6 +132,7 @@ private:
 
 	std::unique_ptr<base::CrashReportWriter> _crashReportWriter;
 	std::unique_ptr<base::SingleInstance> _singleInstance;
+
 	QByteArray _launchCommand;
 
 	const Qt::HANDLE _mainThreadId = nullptr;

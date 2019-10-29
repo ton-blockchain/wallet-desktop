@@ -8,6 +8,11 @@
 
 #include "core/base_integration.h"
 
+namespace Updater {
+class Instance;
+struct Settings;
+} // namespace Updater
+
 namespace Core {
 
 class Launcher {
@@ -22,14 +27,17 @@ public:
 	[[nodiscard]] QString workingPath() const;
 	[[nodiscard]] QString openedUrl() const;
 
+	void startUpdateChecker();
+	void restartForUpdater();
+
 	virtual ~Launcher() = default;
 
 private:
 	enum class Action {
 		Run,
 		Cleanup,
+		InstallUpdate,
 	};
-	void prepareSettings();
 	void processArguments();
 	void initAppDataPath();
 	void initWorkingPath();
@@ -44,11 +52,17 @@ private:
 	void cleanupInstallation();
 	int executeApplication();
 
+	[[nodiscard]] Updater::Settings updaterSettings() const;
+
 	int _argc = 0;
 	char **_argv = nullptr;
 	QStringList _arguments;
 	Action _action = Action::Run;
 	BaseIntegration _baseIntegration;
+
+	std::unique_ptr<Updater::Instance> _updateChecker;
+	bool _restartingForUpdater = false;
+	QStringList _restartingArguments;
 
 	QString _appDataPath;
 	QString _workingPath;
