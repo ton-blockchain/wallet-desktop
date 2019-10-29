@@ -18,6 +18,7 @@ namespace Core {
 class Launcher {
 public:
 	Launcher(int argc, char *argv[]);
+	virtual ~Launcher();
 
 	static std::unique_ptr<Launcher> Create(int argc, char *argv[]);
 
@@ -30,8 +31,6 @@ public:
 	void startUpdateChecker();
 	void restartForUpdater();
 	[[nodiscard]] not_null<Updater::Instance*> updateChecker();
-
-	virtual ~Launcher() = default;
 
 private:
 	enum class Action {

@@ -87,6 +87,8 @@ Launcher::Launcher(int argc, char *argv[])
 	base::Integration::Set(&_baseIntegration);
 }
 
+Launcher::~Launcher() = default;
+
 void Launcher::init() {
 	QApplication::setApplicationName("Gram Wallet");
 	initAppDataPath();
