@@ -184,10 +184,8 @@ QString Launcher::checkPortablePath() {
 }
 
 int Launcher::exec() {
-	std::cout << "Executed.." << std::endl;
 	processArguments();
 	if (_action == Action::InstallUpdate) {
-	std::cout << "Calling installer.." << std::endl;
 		return Updater::Install(_arguments, GetInfoForRegistry());
 	}
 	init();
@@ -206,7 +204,6 @@ int Launcher::exec() {
 	Platform::Start(options);
 
 	auto result = executeApplication();
-	std::cout << "Finished." << std::endl;
 
 	Platform::Finish();
 
@@ -216,7 +213,6 @@ int Launcher::exec() {
 	_updateChecker = nullptr;
 
 	if (restart) {
-	std::cout << "Restarting with updater." << std::endl;
 		restart("Wallet", _restartingArguments);
 	}
 
