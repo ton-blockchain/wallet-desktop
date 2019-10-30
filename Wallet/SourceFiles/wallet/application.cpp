@@ -109,6 +109,11 @@ void Application::openWallet() {
 					+ _path);
 			criticalError(text);
 		} else {
+			if (_wallet->settings().useNetworkCallbacks) {
+				auto copy = _wallet->settings();
+				copy.useNetworkCallbacks = false;
+				_wallet->updateSettings(copy, nullptr);
+			}
 			_window = std::make_unique<Wallet::Window>(
 				_wallet.get(),
 				walletUpdateInfo());
