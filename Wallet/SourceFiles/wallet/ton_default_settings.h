@@ -6,10 +6,12 @@
 //
 #pragma once
 
-#include "ton/ton_wallet.h"
+namespace Ton {
+struct Settings;
+} // namespace Ton
 
 namespace Wallet {
 
-[[nodiscard]] Ton::Config GetDefaultConfig();
+[[nodiscard]] Ton::Settings GetDefaultSettings();
 
 } // namespace Wallet

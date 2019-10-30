@@ -13,8 +13,12 @@ namespace Wallet {
 
 UpdateInfoProvider::UpdateInfoProvider(
 	not_null<Updater::Instance*> updater,
+	Fn<bool()> toggled,
+	Fn<void(bool)> toggle,
 	Fn<void()> install)
 : _updater(updater)
+, _toggled(toggled)
+, _toggle(toggle)
 , _install(install) {
 }
 
@@ -59,12 +63,11 @@ int64 UpdateInfoProvider::size() {
 }
 
 void UpdateInfoProvider::toggle(bool enabled) {
-	_toggled = enabled;
-	if (enabled) {
-		_updater->start(Updater::Instance::Start::Now);
-	} else {
-		_updater->cancel();
-	}
+	_toggle(enabled);
+}
+
+bool UpdateInfoProvider::toggled() {
+	return _toggled();
 }
 
 void UpdateInfoProvider::test() {
@@ -73,10 +76,6 @@ void UpdateInfoProvider::test() {
 
 void UpdateInfoProvider::install() {
 	_install();
-}
-
-bool UpdateInfoProvider::toggled() {
-	return _toggled; // #TODO
 }
 
 int UpdateInfoProvider::currentVersion() {

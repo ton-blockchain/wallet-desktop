@@ -7,9 +7,9 @@
 #include "wallet/application.h"
 
 #include "wallet/wallet_window.h"
-#include "wallet/ton_default_config.h"
+#include "wallet/ton_default_settings.h"
 #include "wallet/update_info_provider.h"
-#include "ton/ton_config.h"
+#include "ton/ton_settings.h"
 #include "ton/ton_state.h"
 #include "ton/ton_wallet.h"
 #include "ton/ton_account_viewer.h"
@@ -91,9 +91,12 @@ bool Application::handleCommand(const QByteArray &command) {
 }
 
 not_null<UpdateInfo*> Application::walletUpdateInfo() {
+	const auto launcher = Core::Sandbox::Instance().launcher();
 	_updateInfo = std::make_unique<UpdateInfoProvider>(
-		Core::Sandbox::Instance().launcher()->updateChecker(),
-		[=] { Core::Sandbox::Instance().launcher()->restartForUpdater(); });
+		launcher->updateChecker(),
+		[=] { return launcher->updateCheckerEnabled(); },
+		[=](bool enabled) { launcher->setUpdateCheckerEnabled(enabled); },
+		[=] { launcher->restartForUpdater(); });
 	return _updateInfo.get();
 }
 
@@ -112,7 +115,7 @@ void Application::openWallet() {
 			handleLaunchCommand();
 		}
 	};
-	_wallet->open(QByteArray(), GetDefaultConfig(), std::move(opened));
+	_wallet->open(QByteArray(), GetDefaultSettings(), std::move(opened));
 }
 
 void Application::criticalError(const QString &text) {

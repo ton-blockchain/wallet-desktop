@@ -32,6 +32,8 @@ public:
 	void restartForUpdater();
 	[[nodiscard]] bool restartingForUpdater() const;
 	[[nodiscard]] not_null<Updater::Instance*> updateChecker();
+	[[nodiscard]] bool updateCheckerEnabled() const;
+	void setUpdateCheckerEnabled(bool enabled);
 
 private:
 	enum class Action {
@@ -54,6 +56,7 @@ private:
 	int executeApplication();
 
 	[[nodiscard]] Updater::Settings updaterSettings() const;
+	[[nodiscard]] QString updateCheckerDisabledFlagPath() const;
 
 	int _argc = 0;
 	char **_argv = nullptr;

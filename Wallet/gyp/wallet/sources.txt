@@ -13,8 +13,8 @@
 <(src_loc)/wallet/application.h
 <(src_loc)/wallet/phrases.cpp
 <(src_loc)/wallet/phrases.h
-<(src_loc)/wallet/ton_default_config.cpp
-<(src_loc)/wallet/ton_default_config.h
+<(src_loc)/wallet/ton_default_settings.cpp
+<(src_loc)/wallet/ton_default_settings.h
 <(src_loc)/wallet/update_info_provider.cpp
 <(src_loc)/wallet/update_info_provider.h
 

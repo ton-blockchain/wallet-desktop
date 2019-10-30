@@ -18,6 +18,8 @@ class UpdateInfoProvider : public UpdateInfo {
 public:
 	UpdateInfoProvider(
 		not_null<Updater::Instance*> updater,
+		Fn<bool()> toggled,
+		Fn<void(bool)> toggle,
 		Fn<void()> install);
 
 	rpl::producer<> checking() override;
@@ -31,16 +33,17 @@ public:
 	int64 size() override;
 
 	void toggle(bool enabled) override;
+	bool toggled() override;
 	void test() override;
 	void install() override;
 
-	bool toggled() override;
 	int currentVersion() override;
 
 private:
 	const not_null<Updater::Instance*> _updater;
+	Fn<bool()> _toggled;
+	Fn<void(bool)> _toggle;
 	Fn<void()> _install;
-	bool _toggled = true;
 
 };
 

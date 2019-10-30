@@ -132,7 +132,7 @@ void Launcher::startUpdateChecker() {
 	if (_updateChecker->readyToRestart()) {
 		_restartingArguments = _arguments.mid(1);
 		restartForUpdater();
-	} else {
+	} else if (updateCheckerEnabled()) {
 		_updateChecker->start(Updater::Instance::Start::Now);
 	}
 }
@@ -152,6 +152,28 @@ not_null<Updater::Instance*> Launcher::updateChecker() {
 	Expects(_updateChecker != nullptr);
 
 	return _updateChecker.get();
+}
+
+void Launcher::setUpdateCheckerEnabled(bool enabled) {
+	Expects(_updateChecker != nullptr);
+
+	if (enabled) {
+		QFile(updateCheckerDisabledFlagPath()).remove();
+		_updateChecker->start(Updater::Instance::Start::Now);
+	} else {
+		auto f = QFile(updateCheckerDisabledFlagPath());
+		f.open(QIODevice::WriteOnly);
+		f.write("1", 1);
+		_updateChecker->cancel();
+	}
+}
+
+bool Launcher::updateCheckerEnabled() const {
+	return !QFile(updateCheckerDisabledFlagPath()).exists();
+}
+
+QString Launcher::updateCheckerDisabledFlagPath() const {
+	return _workingPath + "update_disabled";
 }
 
 bool Launcher::canWorkInExecutablePath() const {
