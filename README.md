@@ -1,6 +1,6 @@
-# [Test Gram Wallet][gram_wallet]
+# [Test Gram Wallet][gram_wallet] (Desktop)
 
-This is the complete source code and build instructions for the TON Blockchain testnet desktop wallet.
+This is the source code and build instructions for a TON Testnet Wallet implementation for desktops.
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
 
