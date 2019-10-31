@@ -104,7 +104,9 @@ void Application::openWallet() {
 	auto opened = [=](Ton::Result<> result) {
 		if (!result) {
 			const auto text = (result.error().type == Ton::Error::Type::IO)
-				? "IO error at path: " + result.error().details
+				? ("IO error at path: " + result.error().details)
+				: (result.error().type == Ton::Error::Type::TonLib)
+				? ("Library error, details: " + result.error().details)
 				: ("Global Password didn't work.\n\nTry deleting all at "
 					+ _path);
 			criticalError(text);
