@@ -20,7 +20,7 @@ Go to ***BuildPath*** and run
 
     sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
-    git clone --recursive https://github.com/ton-blockchain/wallet.git
+    git clone --recursive https://github.com/ton-blockchain/wallet-desktop.git
 
     mkdir ThirdParty
     cd ThirdParty
@@ -111,7 +111,7 @@ Go to ***BuildPath*** and run
 
     git clone https://github.com/ton-blockchain/ton.git
     cd ton
-    git checkout ecb3e06a06
+    git checkout 11bd640ee0
     git submodule init
     git submodule update third-party/crc32c
     mkdir build-debug
@@ -127,8 +127,8 @@ Go to ***BuildPath*** and run
 
 ### Building the project
 
-Go to ***BuildPath*/wallet/Wallet** and run
+Go to ***BuildPath*/wallet-desktop/Wallet** and run
 
     gyp/refresh.sh
 
-Then launch Xcode, open ***BuildPath*/wallet/Wallet/Wallet.xcodeproj** and build for Debug / Release.
+Then launch Xcode, open ***BuildPath*/wallet-desktop/Wallet/Wallet.xcodeproj** and build for Debug / Release.

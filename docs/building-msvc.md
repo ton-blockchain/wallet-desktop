@@ -46,7 +46,7 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
 
     SET PATH=%cd%\ThirdParty\Perl\bin;%cd%\ThirdParty\Python27;%cd%\ThirdParty\NASM;%cd%\ThirdParty\jom;%cd%\ThirdParty\cmake\bin;%cd%\ThirdParty\yasm;%PATH%
 
-    git clone --recursive https://github.com/ton-blockchain/wallet.git
+    git clone --recursive https://github.com/ton-blockchain/wallet-desktop.git
 
     mkdir Libraries
     cd Libraries
@@ -115,7 +115,7 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
 
     git clone https://github.com/ton-blockchain/ton.git
     cd ton
-    git checkout ecb3e06a06
+    git checkout 11bd640ee0
     git submodule init
     git submodule update third-party/crc32c
     mkdir build-debug
@@ -129,11 +129,11 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     cmake --build . --target tonlib --config Release
     cd ../..
 
-    cd ../wallet/Wallet
+    cd ../wallet-desktop/Wallet
     gyp\refresh.bat
 
 ## Build the project
 
-* Open ***BuildPath*\\wallet\\Wallet\\Wallet.sln** in Visual Studio 2019
+* Open ***BuildPath*\\wallet-desktop\\Wallet\\Wallet.sln** in Visual Studio 2019
 * Select Wallet project and press Build > Build Wallet (Debug and Release configurations)
-* The result Wallet.exe will be located in ***BuildPath*\\wallet\\out\\Debug** (and **Release**)
+* The result Wallet.exe will be located in ***BuildPath*\\wallet-desktop\\out\\Debug** (and **Release**)

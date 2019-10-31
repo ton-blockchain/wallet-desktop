@@ -27,7 +27,7 @@ You can set the multithreaded make parameter by running
 
 Go to ***BuildPath*** and run
 
-    git clone --recursive https://github.com/ton-blockchain/wallet.git
+    git clone --recursive https://github.com/ton-blockchain/wallet-desktop.git
 
     mkdir Libraries
     cd Libraries
@@ -110,7 +110,7 @@ Go to ***BuildPath*** and run
 
     git clone https://github.com/ton-blockchain/ton.git
     cd ton
-    git checkout ecb3e06a06
+    git checkout 11bd640ee0
     git submodule init
     git submodule update third-party/crc32c
     mkdir build-debug
@@ -126,16 +126,16 @@ Go to ***BuildPath*** and run
 
 ### Building the project
 
-Go to ***BuildPath*/wallet/Wallet** and run
+Go to ***BuildPath*/wallet-desktop/Wallet** and run
 
     gyp/refresh.sh
 
-To make Debug version go to ***BuildPath*/wallet/out/Debug** and run
+To make Debug version go to ***BuildPath*/wallet-desktop/out/Debug** and run
 
     make $MAKE_THREADS_CNT
 
-To make Release version go to ***BuildPath*/wallet/out/Release** and run
+To make Release version go to ***BuildPath*/wallet-desktop/out/Release** and run
 
     make $MAKE_THREADS_CNT
 
-You can debug your builds from Qt Creator, just open **CMakeLists.txt** from ***BuildPath*/wallet/out/Debug** and launch with debug.
+You can debug your builds from Qt Creator, just open **CMakeLists.txt** from ***BuildPath*/wallet-desktop/out/Debug** and launch with debug.
