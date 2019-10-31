@@ -132,7 +132,7 @@ files.append({
   'label': 'Linux 64 bit: Binary',
 })
 
-releasesUrl = url + 'repos/ton-blockchain/wallet/releases'
+releasesUrl = url + 'repos/ton-blockchain/wallet-desktop/releases'
 
 r = requests.get(releasesUrl + '/tags/v' + version)
 if r.status_code == 404:

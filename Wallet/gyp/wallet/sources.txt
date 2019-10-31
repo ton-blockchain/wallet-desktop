@@ -8,6 +8,7 @@
 <(src_loc)/core/sandbox.h
 <(src_loc)/core/ui_integration.cpp
 <(src_loc)/core/ui_integration.h
+<(src_loc)/core/version.h
 <(src_loc)/wallet/application.cpp
 <(src_loc)/wallet/application.h
 <(src_loc)/wallet/phrases.cpp

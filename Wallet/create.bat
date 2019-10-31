@@ -91,11 +91,11 @@ exit /b %errorlevel%
 (
   set "Path=%1"
   (
-    echo // This file is part of TON Desktop Wallet,
+    echo // This file is part of Gram Wallet Desktop,
     echo // a desktop application for the TON Blockchain project.
     echo //
     echo // For license and copyright information please follow this link:
-    echo // https://github.com/ton-blockchain/wallet/blob/master/LEGAL
+    echo // https://github.com/ton-blockchain/wallet-desktop/blob/master/LEGAL
     echo //
   )> "SourceFiles\!Path!"
   exit /b
