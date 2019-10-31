@@ -1,6 +1,6 @@
-# [Gram Wallet][gram_wallet]
+# [Test Gram Wallet][gram_wallet]
 
-This is the complete source code and the build instructions for the official desktop client for the TON Blockchain project.
+This is the complete source code and build instructions for the TON Blockchain testnet desktop wallet.
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
 
