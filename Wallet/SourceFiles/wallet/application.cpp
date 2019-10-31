@@ -101,26 +101,36 @@ not_null<UpdateInfo*> Application::walletUpdateInfo() {
 }
 
 void Application::openWallet() {
+	const auto showError = [=](Ton::Error error) {
+		const auto text = (error.type == Ton::Error::Type::IO)
+			? ("IO error at path: " + error.details)
+			: (error.type == Ton::Error::Type::TonLib)
+			? ("Library error, details: " + error.details)
+			: ("Global Password didn't work.");
+		const auto solution = "\n\nTry deleting all at " + _path;
+		criticalError(text + solution);
+	};
+	auto started = [=](Ton::Result<> result) {
+		if (!result) {
+			showError(result.error());
+			return;
+		}
+		_window = std::make_unique<Wallet::Window>(
+			_wallet.get(),
+			walletUpdateInfo());
+		handleLaunchCommand();
+	};
 	auto opened = [=](Ton::Result<> result) {
 		if (!result) {
-			const auto text = (result.error().type == Ton::Error::Type::IO)
-				? ("IO error at path: " + result.error().details)
-				: (result.error().type == Ton::Error::Type::TonLib)
-				? ("Library error, details: " + result.error().details)
-				: ("Global Password didn't work.\n\nTry deleting all at "
-					+ _path);
-			criticalError(text);
-		} else {
-			if (_wallet->settings().useNetworkCallbacks) {
-				auto copy = _wallet->settings();
-				copy.useNetworkCallbacks = false;
-				_wallet->updateSettings(copy, nullptr);
-			}
-			_window = std::make_unique<Wallet::Window>(
-				_wallet.get(),
-				walletUpdateInfo());
-			handleLaunchCommand();
+			showError(result.error());
+			return;
 		}
+		if (_wallet->settings().useNetworkCallbacks) {
+			auto copy = _wallet->settings();
+			copy.useNetworkCallbacks = false;
+			_wallet->updateSettings(copy, nullptr);
+		}
+		_wallet->start(started);
 	};
 	_wallet->open(QByteArray(), GetDefaultSettings(), std::move(opened));
 }
