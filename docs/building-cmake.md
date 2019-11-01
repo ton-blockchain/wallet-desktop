@@ -110,7 +110,7 @@ Go to ***BuildPath*** and run
 
     git clone https://github.com/ton-blockchain/ton.git
     cd ton
-    git checkout 11bd640ee0
+    git checkout 950e2922
     git submodule init
     git submodule update third-party/crc32c
     mkdir build-debug

@@ -115,7 +115,7 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
 
     git clone https://github.com/ton-blockchain/ton.git
     cd ton
-    git checkout 11bd640ee0
+    git checkout 950e2922
     git submodule init
     git submodule update third-party/crc32c
     mkdir build-debug
