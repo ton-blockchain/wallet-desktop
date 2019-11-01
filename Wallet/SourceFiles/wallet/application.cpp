@@ -90,7 +90,8 @@ bool Application::handleCommand(const QByteArray &command) {
 	return false;
 }
 
-not_null<UpdateInfo*> Application::walletUpdateInfo() {
+UpdateInfo *Application::walletUpdateInfo() {
+#ifdef WALLET_AUTOUPDATING_BUILD
 	const auto launcher = Core::Sandbox::Instance().launcher();
 	_updateInfo = std::make_unique<UpdateInfoProvider>(
 		launcher->updateChecker(),
@@ -98,6 +99,9 @@ not_null<UpdateInfo*> Application::walletUpdateInfo() {
 		[=](bool enabled) { launcher->setUpdateCheckerEnabled(enabled); },
 		[=] { launcher->restartForUpdater(); });
 	return _updateInfo.get();
+#else // WALLET_AUTOUPDATING_BUILD
+	return nullptr;
+#endif // WALLET_AUTOUPDATING_BUILD
 }
 
 void Application::openWallet() {

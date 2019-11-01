@@ -18,12 +18,12 @@ if sys.platform == 'win32' and not 'COMSPEC' in os.environ:
 executePath = os.getcwd()
 scriptPath = os.path.dirname(os.path.realpath(__file__))
 
-officialTarget = ''
-officialTargetFile = scriptPath + '/../build/target'
-if os.path.isfile(officialTargetFile):
-    with open(officialTargetFile, 'r') as f:
+specialTarget = ''
+specialTargetFile = scriptPath + '/../build/target'
+if os.path.isfile(specialTargetFile):
+    with open(specialTargetFile, 'r') as f:
         for line in f:
-            officialTarget = line.strip()
+            specialTarget = line.strip()
 
 gypScript = 'gyp'
 gypFormats = []
@@ -32,7 +32,7 @@ cmakeConfigurations = []
 gypArguments.append('--depth=.')
 gypArguments.append('--generator-output=..')
 gypArguments.append('-Goutput_dir=../out')
-gypArguments.append('-Dofficial_build_target=' + officialTarget)
+gypArguments.append('-Dspecial_build_target=' + specialTarget)
 gypArguments.append('-Dprivate_name=wallet')
 gypArguments.append('-Dpublic_key_loc=../SourceFiles/core')
 

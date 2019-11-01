@@ -7,6 +7,9 @@
 #include "wallet/update_info_provider.h"
 
 #include "core/version.h"
+
+#ifdef WALLET_AUTOUPDATING_BUILD
+
 #include "updater/updater_instance.h"
 
 namespace Wallet {
@@ -83,3 +86,67 @@ int UpdateInfoProvider::currentVersion() {
 }
 
 } // namespace Wallet
+
+#else // WALLET_AUTOUPDATING_BUILD
+
+namespace Wallet {
+
+UpdateInfoProvider::UpdateInfoProvider(
+	not_null<Updater::Instance*> updater,
+	Fn<bool()> toggled,
+	Fn<void(bool)> toggle,
+	Fn<void()> install) {
+}
+
+rpl::producer<> UpdateInfoProvider::checking() {
+	return rpl::never<>();
+}
+
+rpl::producer<> UpdateInfoProvider::isLatest() {
+	return rpl::never<>();
+}
+
+rpl::producer<UpdateProgress> UpdateInfoProvider::progress() {
+	return rpl::never<UpdateProgress>();
+}
+
+rpl::producer<> UpdateInfoProvider::failed() {
+	return rpl::never<>();
+}
+
+rpl::producer<> UpdateInfoProvider::ready() {
+	return rpl::never<>();
+}
+
+UpdateState UpdateInfoProvider::state() {
+	return UpdateState::None;
+}
+
+int64 UpdateInfoProvider::already() {
+	return 0;
+}
+
+int64 UpdateInfoProvider::size() {
+	return 0;
+}
+
+void UpdateInfoProvider::toggle(bool enabled) {
+}
+
+bool UpdateInfoProvider::toggled() {
+	return false;
+}
+
+void UpdateInfoProvider::test() {
+}
+
+void UpdateInfoProvider::install() {
+}
+
+int UpdateInfoProvider::currentVersion() {
+	return AppVersion;
+}
+
+} // namespace Wallet
+
+#endif // WALLET_AUTOUPDATING_BUILD

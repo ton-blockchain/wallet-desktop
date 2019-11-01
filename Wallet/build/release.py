@@ -166,7 +166,7 @@ if r.status_code == 404:
   print('Changelog: ')
   print(changelog)
 
-  r = requests.post(releasesUrl headers={'Authorization': 'token ' + access_token}, data=json.dumps({
+  r = requests.post(releasesUrl, headers={'Authorization': 'token ' + access_token}, data=json.dumps({
     'tag_name': 'v' + version,
     'target_commitish': commit,
     'name': 'v ' + version,

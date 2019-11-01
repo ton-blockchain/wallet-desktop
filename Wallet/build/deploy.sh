@@ -6,7 +6,7 @@ popd > /dev/null
 
 if [ ! -d "$FullScriptPath/../../../DesktopPrivate" ]; then
   echo ""
-  echo "This script is for building the official version of Gram Wallet."
+  echo "This script is for building the autoupdating version of Gram Wallet."
   echo ""
   echo "For building custom versions please visit the build instructions page at:"
   echo "https://github.com/ton-blockchain/wallet-desktop/#build-instructions"

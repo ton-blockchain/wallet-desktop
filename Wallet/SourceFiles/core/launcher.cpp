@@ -10,9 +10,12 @@
 #include "ui/ui_utility.h"
 #include "core/sandbox.h"
 #include "core/version.h"
-#include "updater/updater_instance.h"
 #include "base/platform/base_platform_info.h"
 #include "base/concurrent_timer.h"
+
+#ifdef WALLET_AUTOUPDATING_BUILD
+#include "updater/updater_instance.h"
+#endif // WALLET_AUTOUPDATING_BUILD
 
 #include <QtWidgets/QApplication>
 #include <QtCore/QJsonObject>
@@ -62,6 +65,7 @@ char **FilteredCommandLineArguments::values() {
 	return _arguments;
 }
 
+#ifdef WALLET_AUTOUPDATING_BUILD
 Updater::InfoForRegistry GetInfoForRegistry() {
 	auto result = Updater::InfoForRegistry();
 	result.fullName = "Gram Wallet";
@@ -74,6 +78,7 @@ Updater::InfoForRegistry GetInfoForRegistry() {
 	result.publisher = "Telegram FZ-LLC";
 	return result;
 }
+#endif // WALLET_AUTOUPDATING_BUILD
 
 } // namespace
 
@@ -124,6 +129,8 @@ QString Launcher::computeWorkingPathBase() {
 	}
 #endif // Q_OS_MAC || Q_OS_LINUX || Q_OS_WINRT || OS_WIN_STORE
 }
+
+#ifdef WALLET_AUTOUPDATING_BUILD
 
 void Launcher::startUpdateChecker() {
 	_updateChecker = std::make_unique<Updater::Instance>(
@@ -176,6 +183,17 @@ QString Launcher::updateCheckerDisabledFlagPath() const {
 	return _workingPath + "update_disabled";
 }
 
+Updater::Settings Launcher::updaterSettings() const {
+	auto result = Updater::Settings();
+	result.basePath = workingPath();
+	result.url = "https://desktop-updates.ton.org/current";
+	result.delayConstPart = kUpdaterDelayConstPart;
+	result.delayRandPart = kUpdaterDelayRandPart;
+	return result;
+}
+
+#endif // WALLET_AUTOUPDATING_BUILD
+
 bool Launcher::canWorkInExecutablePath() const {
 	const auto dataPath = _baseIntegration.executableDir() + "data";
 	if (!QDir(dataPath).exists() && !QDir().mkpath(dataPath)) {
@@ -207,9 +225,13 @@ QString Launcher::checkPortablePath() {
 
 int Launcher::exec() {
 	processArguments();
+
+#ifdef WALLET_AUTOUPDATING_BUILD
 	if (_action == Action::InstallUpdate) {
 		return Updater::Install(_arguments, GetInfoForRegistry());
 	}
+#endif // WALLET_AUTOUPDATING_BUILD
+
 	init();
 	if (_action == Action::Cleanup) {
 		cleanupInstallation();
@@ -229,6 +251,7 @@ int Launcher::exec() {
 
 	Platform::Finish();
 
+#ifdef WALLET_AUTOUPDATING_BUILD
 	auto restart = (_updateChecker && _restartingForUpdater)
 		? _updateChecker->restarter()
 		: nullptr;
@@ -237,6 +260,7 @@ int Launcher::exec() {
 	if (restart) {
 		restart("Wallet", _restartingArguments);
 	}
+#endif // WALLET_AUTOUPDATING_BUILD
 
 	return result;
 }
@@ -300,15 +324,6 @@ void Launcher::processArguments() {
 			nextUrl = true;
 		}
 	}
-}
-
-Updater::Settings Launcher::updaterSettings() const {
-	auto result = Updater::Settings();
-	result.basePath = workingPath();
-	result.url = "https://desktop-updates.ton.org/current";
-	result.delayConstPart = kUpdaterDelayConstPart;
-	result.delayRandPart = kUpdaterDelayRandPart;
-	return result;
 }
 
 int Launcher::executeApplication() {

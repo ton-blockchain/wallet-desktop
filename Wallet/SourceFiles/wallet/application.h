@@ -45,7 +45,7 @@ private:
 	void criticalError(const QString &text);
 	void handleLaunchCommand();
 	bool handleCommand(const QByteArray &command);
-	not_null<UpdateInfo*> walletUpdateInfo();
+	UpdateInfo *walletUpdateInfo();
 
 	const QString _path;
 	const std::unique_ptr<Ton::Wallet> _wallet;

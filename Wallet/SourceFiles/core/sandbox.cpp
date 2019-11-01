@@ -18,7 +18,10 @@
 #include "base/single_instance.h"
 #include "base/unixtime.h"
 #include "base/timer.h"
+
+#ifdef WALLET_AUTOUPDATING_BUILD
 #include "updater/updater_instance.h"
+#endif // WALLET_AUTOUPDATING_BUILD
 
 #include <QtWidgets/QDesktopWidget>
 #include <QtGui/QScreen>
@@ -100,10 +103,12 @@ void Sandbox::run() {
 	setupScreenScale();
 	installNativeEventFilter(this);
 
+#ifdef WALLET_AUTOUPDATING_BUILD
 	_launcher->startUpdateChecker();
 	if (_launcher->restartingForUpdater()) {
 		return;
 	}
+#endif // WALLET_AUTOUPDATING_BUILD
 
 	_crashReportWriter = std::make_unique<base::CrashReportWriter>(
 		_launcher->workingPath() + "crashes/");

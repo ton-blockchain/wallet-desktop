@@ -28,13 +28,14 @@ public:
 	[[nodiscard]] QString workingPath() const;
 	[[nodiscard]] QString openedUrl() const;
 
+#ifdef WALLET_AUTOUPDATING_BUILD
 	void startUpdateChecker();
 	void restartForUpdater();
 	[[nodiscard]] bool restartingForUpdater() const;
 	[[nodiscard]] not_null<Updater::Instance*> updateChecker();
 	[[nodiscard]] bool updateCheckerEnabled() const;
 	void setUpdateCheckerEnabled(bool enabled);
-
+#endif // WALLET_AUTOUPDATING_BUILD
 private:
 	enum class Action {
 		Run,
@@ -55,8 +56,10 @@ private:
 	void cleanupInstallation();
 	int executeApplication();
 
+#ifdef WALLET_AUTOUPDATING_BUILD
 	[[nodiscard]] Updater::Settings updaterSettings() const;
 	[[nodiscard]] QString updateCheckerDisabledFlagPath() const;
+#endif // WALLET_AUTOUPDATING_BUILD
 
 	int _argc = 0;
 	char **_argv = nullptr;
@@ -64,9 +67,11 @@ private:
 	Action _action = Action::Run;
 	BaseIntegration _baseIntegration;
 
+#ifdef WALLET_AUTOUPDATING_BUILD
 	std::unique_ptr<Updater::Instance> _updateChecker;
 	bool _restartingForUpdater = false;
 	QStringList _restartingArguments;
+#endif // WALLET_AUTOUPDATING_BUILD
 
 	QString _appDataPath;
 	QString _workingPath;

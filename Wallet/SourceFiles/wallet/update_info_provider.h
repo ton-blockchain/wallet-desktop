@@ -40,10 +40,12 @@ public:
 	int currentVersion() override;
 
 private:
+#ifdef WALLET_AUTOUPDATING_BUILD
 	const not_null<Updater::Instance*> _updater;
 	Fn<bool()> _toggled;
 	Fn<void(bool)> _toggle;
 	Fn<void()> _install;
+#endif // WALLET_AUTOUPDATING_BUILD
 
 };
 

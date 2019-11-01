@@ -61,13 +61,13 @@
     'defines': [
       '<!@(python -c "for s in \'<(build_defines)\'.split(\',\'): print(s)")',
     ],
-    'conditions': [[ '"<(official_build_target)" != ""', {
+    'conditions': [[ '"<(special_build_target)" != ""', {
       'dependencies': [
         '<(submodules_loc)/lib_updater/lib_updater.gyp:lib_updater',
         '<(submodules_loc)/lib_updater/lib_updater.gyp:update_packer',
       ],
       'defines': [
-        'WALLET_OFFICIAL_BUILD',
+        'WALLET_AUTOUPDATING_BUILD',
       ],
     }]],
     'include_dirs': [
