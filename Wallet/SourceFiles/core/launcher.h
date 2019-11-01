@@ -28,6 +28,8 @@ public:
 	[[nodiscard]] QString workingPath() const;
 	[[nodiscard]] QString openedUrl() const;
 
+	void registerUrlScheme();
+
 #ifdef WALLET_AUTOUPDATING_BUILD
 	void startUpdateChecker();
 	void restartForUpdater();
@@ -36,6 +38,7 @@ public:
 	[[nodiscard]] bool updateCheckerEnabled() const;
 	void setUpdateCheckerEnabled(bool enabled);
 #endif // WALLET_AUTOUPDATING_BUILD
+
 private:
 	enum class Action {
 		Run,
@@ -54,6 +57,7 @@ private:
 
 	void init();
 	void cleanupInstallation();
+	void cleanupUrlScheme();
 	int executeApplication();
 
 #ifdef WALLET_AUTOUPDATING_BUILD

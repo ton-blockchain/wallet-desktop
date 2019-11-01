@@ -11,6 +11,7 @@
 #include "core/sandbox.h"
 #include "core/version.h"
 #include "base/platform/base_platform_info.h"
+#include "base/platform/base_platform_url_scheme.h"
 #include "base/concurrent_timer.h"
 
 #ifdef WALLET_AUTOUPDATING_BUILD
@@ -80,6 +81,22 @@ Updater::InfoForRegistry GetInfoForRegistry() {
 }
 #endif // WALLET_AUTOUPDATING_BUILD
 
+base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
+		not_null<Launcher*> launcher) {
+	auto result = base::Platform::UrlSchemeDescriptor();
+	result.executable = base::Integration::Instance().executablePath();
+	result.protocol = "ton";
+	result.protocolName = "TON Gram Transfer Link";
+	result.shortAppName = "gramwallet";
+	result.desktopFileDir = launcher->workingPath();
+	result.desktopFileName = "gramwallet";
+	result.iconFileName = "gramwallet";
+	result.longAppName = "GramWallet";
+	result.displayAppName = "Gram Wallet";
+	result.displayAppDescription = "Desktop wallet for TON";
+	return result;
+}
+
 } // namespace
 
 std::unique_ptr<Launcher> Launcher::Create(int argc, char *argv[]) {
@@ -128,6 +145,14 @@ QString Launcher::computeWorkingPathBase() {
 		return _appDataPath;
 	}
 #endif // Q_OS_MAC || Q_OS_LINUX || Q_OS_WINRT || OS_WIN_STORE
+}
+
+void Launcher::registerUrlScheme() {
+	base::Platform::RegisterUrlScheme(CustomSchemeDescriptor(this));
+}
+
+void Launcher::cleanupUrlScheme() {
+	base::Platform::UnregisterUrlScheme(CustomSchemeDescriptor(this));
 }
 
 #ifdef WALLET_AUTOUPDATING_BUILD
@@ -266,6 +291,7 @@ int Launcher::exec() {
 }
 
 void Launcher::cleanupInstallation() {
+	cleanupUrlScheme();
 }
 
 void Launcher::setupScale() {

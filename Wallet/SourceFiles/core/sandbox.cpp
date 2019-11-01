@@ -11,7 +11,6 @@
 #include "ui/widgets/tooltip.h"
 #include "ui/emoji_config.h"
 #include "ui/effects/animations.h"
-#include "base/platform/base_platform_url_scheme.h"
 #include "base/crash_report_writer.h"
 #include "base/integration.h"
 #include "base/concurrent_timer.h"
@@ -30,25 +29,6 @@
 #include <QtGui/QtEvents>
 
 namespace Core {
-namespace {
-
-base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
-		not_null<Launcher*> launcher) {
-	auto result = base::Platform::UrlSchemeDescriptor();
-	result.executable = base::Integration::Instance().executablePath();
-	result.protocol = "ton";
-	result.protocolName = "TON Gram Transfer Link";
-	result.shortAppName = "gramwallet";
-	result.desktopFileDir = launcher->workingPath();
-	result.desktopFileName = "gramwallet";
-	result.iconFileName = "gramwallet";
-	result.longAppName = "GramWallet";
-	result.displayAppName = "Gram Wallet";
-	result.displayAppDescription = "Desktop wallet for TON";
-	return result;
-}
-
-} // namespace
 
 Sandbox::Sandbox(
 	not_null<Launcher*> launcher,
@@ -142,7 +122,7 @@ void Sandbox::launchApplication() {
 	_application->run();
 	handleLaunchCommand();
 
-	base::Platform::RegisterUrlScheme(CustomSchemeDescriptor(_launcher));
+	_launcher->registerUrlScheme();
 }
 
 auto Sandbox::createNestedEventLoopState(not_null<QObject*> guard)
