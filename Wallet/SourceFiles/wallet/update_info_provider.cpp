@@ -66,7 +66,9 @@ int64 UpdateInfoProvider::size() {
 }
 
 void UpdateInfoProvider::toggle(bool enabled) {
-	_toggle(enabled);
+	if (enabled != toggled()) {
+		_toggle(enabled);
+	}
 }
 
 bool UpdateInfoProvider::toggled() {
