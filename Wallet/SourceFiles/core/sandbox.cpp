@@ -11,6 +11,7 @@
 #include "ui/widgets/tooltip.h"
 #include "ui/emoji_config.h"
 #include "ui/effects/animations.h"
+#include "ton/ton_wallet.h"
 #include "base/crash_report_writer.h"
 #include "base/integration.h"
 #include "base/concurrent_timer.h"
@@ -79,6 +80,10 @@ QWidget *Sandbox::handleLaunchCommand() {
 }
 
 void Sandbox::run() {
+	Ton::Wallet::EnableLogging(
+		_launcher->verbose(),
+		_launcher->workingPath());
+
 	style::internal::StartFonts();
 	setupScreenScale();
 	installNativeEventFilter(this);

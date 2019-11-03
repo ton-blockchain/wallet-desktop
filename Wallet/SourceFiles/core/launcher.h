@@ -27,6 +27,7 @@ public:
 	[[nodiscard]] QString argumentsString() const;
 	[[nodiscard]] QString workingPath() const;
 	[[nodiscard]] QString openedUrl() const;
+	[[nodiscard]] bool verbose() const;
 
 	void registerUrlScheme();
 
@@ -70,6 +71,12 @@ private:
 	QStringList _arguments;
 	Action _action = Action::Run;
 	BaseIntegration _baseIntegration;
+
+#ifdef _DEBUG
+	bool _verbose = false;
+#else // _DEBUG
+	bool _verbose = false;
+#endif // _DEBUG
 
 #ifdef WALLET_AUTOUPDATING_BUILD
 	std::unique_ptr<Updater::Instance> _updateChecker;

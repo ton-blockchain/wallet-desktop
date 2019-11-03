@@ -327,6 +327,10 @@ QString Launcher::openedUrl() const {
 	return _openedUrl;
 }
 
+bool Launcher::verbose() const {
+	return _verbose;
+}
+
 void Launcher::initAppDataPath() {
 	const auto path = QStandardPaths::writableLocation(
 		QStandardPaths::AppDataLocation);
@@ -344,6 +348,8 @@ void Launcher::processArguments() {
 		} else if (argument == "installupdate") {
 			_action = Action::InstallUpdate;
 			break;
+		} else if (argument == "--verbose") {
+			_verbose = true;
 		} else if (nextUrl) {
 			_openedUrl = argument;
 		} else if (argument == "--") {
