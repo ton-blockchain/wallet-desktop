@@ -8,6 +8,7 @@
 
 #include "core/launcher.h"
 #include "wallet/application.h"
+#include "wallet/wallet_log.h"
 #include "ui/widgets/tooltip.h"
 #include "ui/emoji_config.h"
 #include "ui/effects/animations.h"
@@ -57,6 +58,7 @@ void Sandbox::checkSingleInstance() {
 		_singleInstance->reply(cmd.id, handleLaunchCommand());
 	}, _lifetime);
 
+	WALLET_LOG(("Checking single instance."));
 	_launchCommand = computeLaunchCommand();
 	_singleInstance->start(
 		QApplication::applicationName(),
@@ -80,6 +82,7 @@ QWidget *Sandbox::handleLaunchCommand() {
 }
 
 void Sandbox::run() {
+	WALLET_LOG(("Single instance checked."));
 	Ton::Wallet::EnableLogging(
 		_launcher->verbose(),
 		_launcher->workingPath());
@@ -95,6 +98,7 @@ void Sandbox::run() {
 	}
 #endif // WALLET_AUTOUPDATING_BUILD
 
+	WALLET_LOG(("Starting crash reporter."));
 	_crashReportWriter = std::make_unique<base::CrashReportWriter>(
 		_launcher->workingPath() + "crashes/");
 	//if (_crashReportWriter->lastLaunchFailed()) {
@@ -102,6 +106,7 @@ void Sandbox::run() {
 	//}
 	_crashReportWriter->start();
 
+	WALLET_LOG(("Starting style manager."));
 	style::startManager(_scale);
 	Ui::Emoji::Init();
 
@@ -115,15 +120,19 @@ void Sandbox::run() {
 }
 
 void Sandbox::launchApplication() {
+	WALLET_LOG(("Creating the application."));
 	_application = std::make_unique<Wallet::Application>(
 		_launcher->workingPath());
 	connect(this, &Sandbox::aboutToQuit, [=] {
 		customEnterFromEventLoop([&] {
+			WALLET_LOG(("Qutting the application."));
 			_singleInstance = nullptr;
 			_application = nullptr;
 			_crashReportWriter = nullptr;
 		});
 	});
+
+	WALLET_LOG(("Running the application."));
 	_application->run();
 	handleLaunchCommand();
 
@@ -187,6 +196,7 @@ void Sandbox::setupScreenScale() {
 }
 
 void Sandbox::setScale(int scale) {
+	WALLET_LOG(("Scale: %1").arg(scale));
 	_scale = scale;
 	style::SetScale(scale);
 }

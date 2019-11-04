@@ -7,6 +7,7 @@
 #include "wallet/application.h"
 
 #include "wallet/wallet_window.h"
+#include "wallet/wallet_log.h"
 #include "wallet/ton_default_settings.h"
 #include "wallet/update_info_provider.h"
 #include "ton/ton_settings.h"
@@ -105,6 +106,8 @@ UpdateInfo *Application::walletUpdateInfo() {
 }
 
 void Application::openWallet() {
+	WALLET_LOG(("Opening the wallet."));
+
 	const auto showError = [=](Ton::Error error) {
 		const auto text = (error.type == Ton::Error::Type::IO)
 			? ("IO error at path: " + error.details)
@@ -119,6 +122,7 @@ void Application::openWallet() {
 			showError(result.error());
 			return;
 		}
+		WALLET_LOG(("Creating the wallet."));
 		_window = std::make_unique<Wallet::Window>(
 			_wallet.get(),
 			walletUpdateInfo());

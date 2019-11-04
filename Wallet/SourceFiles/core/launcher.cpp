@@ -10,8 +10,11 @@
 #include "ui/ui_utility.h"
 #include "core/sandbox.h"
 #include "core/version.h"
+#include "wallet/wallet_log.h"
+#include "ton/ton_wallet.h"
 #include "base/platform/base_platform_info.h"
 #include "base/platform/base_platform_url_scheme.h"
+#include "base/platform/win/base_windows_h.h"
 #include "base/concurrent_timer.h"
 
 #ifdef WALLET_AUTOUPDATING_BUILD
@@ -106,7 +109,7 @@ std::unique_ptr<Launcher> Launcher::Create(int argc, char *argv[]) {
 Launcher::Launcher(int argc, char *argv[])
 : _argc(argc)
 , _argv(argv)
-, _baseIntegration(argc, argv) {
+, _baseIntegration(argc, argv, this) {
 	base::Integration::Set(&_baseIntegration);
 }
 
@@ -120,6 +123,7 @@ void Launcher::init() {
 
 void Launcher::initWorkingPath() {
 	_workingPath = computeWorkingPathBase() + "data/";
+	WALLET_LOG(("Working path: %1").arg(_workingPath));
 }
 
 QString Launcher::computeWorkingPathBase() {
@@ -155,9 +159,23 @@ void Launcher::cleanupUrlScheme() {
 	base::Platform::UnregisterUrlScheme(CustomSchemeDescriptor(this));
 }
 
+void Launcher::logMessage(const QString &message) {
+	if (!verbose()) {
+		return;
+	}
+	Ton::Wallet::LogMessage("[wallet] " + message);
+	std::cout << message.toStdString() << std::endl;
+
+#ifdef Q_OS_WIN
+	const auto wide = message.toStdWString() + L'\n';
+	OutputDebugString(wide.c_str());
+#endif // Q_OS_WIN
+}
+
 #ifdef WALLET_AUTOUPDATING_BUILD
 
 void Launcher::startUpdateChecker() {
+	WALLET_LOG(("Starting checking for updates."));
 	_updateChecker = std::make_unique<Updater::Instance>(
 		updaterSettings(),
 		AppVersion);
@@ -250,15 +268,18 @@ QString Launcher::checkPortablePath() {
 
 int Launcher::exec() {
 	processArguments();
+	WALLET_LOG(("Arguments processed, action: %1").arg(int(_action)));
 
 #ifdef WALLET_AUTOUPDATING_BUILD
 	if (_action == Action::InstallUpdate) {
+		WALLET_LOG(("Installing update."));
 		return Updater::Install(_arguments, GetInfoForRegistry());
 	}
 #endif // WALLET_AUTOUPDATING_BUILD
 
 	init();
 	if (_action == Action::Cleanup) {
+		WALLET_LOG(("Cleanup and exit."));
 		cleanupInstallation();
 		return 0;
 	}
@@ -271,9 +292,11 @@ int Launcher::exec() {
 	options.insert("custom_font_config_src", QString(":/fc/fc-custom.conf"));
 	options.insert("custom_font_config_dst", tempFontConfigPath);
 	Platform::Start(options);
+	WALLET_LOG(("Platform started."));
 
 	auto result = executeApplication();
 
+	WALLET_LOG(("Finished, cleaning up."));
 	Platform::Finish();
 
 #ifdef WALLET_AUTOUPDATING_BUILD
@@ -283,6 +306,7 @@ int Launcher::exec() {
 	_updateChecker = nullptr;
 
 	if (restart) {
+		WALLET_LOG(("Restarting with update installer."));
 		restart("Wallet", _restartingArguments);
 	}
 #endif // WALLET_AUTOUPDATING_BUILD
@@ -336,6 +360,7 @@ void Launcher::initAppDataPath() {
 		QStandardPaths::AppDataLocation);
 	const auto absolute = QDir(path).absolutePath();
 	_appDataPath = absolute.endsWith('/') ? absolute : (absolute + '/');
+	WALLET_LOG(("App data path: %1").arg(_appDataPath));
 }
 
 void Launcher::processArguments() {
@@ -360,9 +385,12 @@ void Launcher::processArguments() {
 
 int Launcher::executeApplication() {
 	FilteredCommandLineArguments arguments(_argc, _argv);
+	WALLET_LOG(("Creating sandbox.."));
 	Sandbox sandbox(this, arguments.count(), arguments.values());
+	WALLET_LOG(("Sandbox created."));
 	Ui::MainQueueProcessor processor;
 	base::ConcurrentTimerEnvironment environment;
+	WALLET_LOG(("Launching QApplication."));
 	return sandbox.exec();
 }
 

@@ -31,6 +31,8 @@ public:
 
 	void registerUrlScheme();
 
+	void logMessage(const QString &message);
+
 #ifdef WALLET_AUTOUPDATING_BUILD
 	void startUpdateChecker();
 	void restartForUpdater();
@@ -73,7 +75,7 @@ private:
 	BaseIntegration _baseIntegration;
 
 #ifdef _DEBUG
-	bool _verbose = false;
+	bool _verbose = true;
 #else // _DEBUG
 	bool _verbose = false;
 #endif // _DEBUG

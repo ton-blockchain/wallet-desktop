@@ -6,12 +6,17 @@
 //
 #include "core/base_integration.h"
 
+#include "core/launcher.h"
 #include "core/sandbox.h"
 
 namespace Core {
 
-BaseIntegration::BaseIntegration(int argc, char *argv[])
-: Integration(argc, argv) {
+BaseIntegration::BaseIntegration(
+	int argc,
+	char *argv[],
+	not_null<Launcher*> launcher)
+: Integration(argc, argv)
+, _launcher(launcher) {
 }
 
 void BaseIntegration::enterFromEventLoop(FnMut<void()> &&method) {
@@ -19,11 +24,13 @@ void BaseIntegration::enterFromEventLoop(FnMut<void()> &&method) {
 		std::move(method));
 }
 
+void BaseIntegration::logMessage(const QString &message) {
+	_launcher->logMessage(message);
+}
+
 void BaseIntegration::logAssertionViolation(const QString &info) {
-#ifdef LOG
-	LOG(("Assertion Failed! ") + info);
-#endif // LOG
 	if (QCoreApplication::instance()) {
+		_launcher->logMessage("Assertion Failed! " + info);
 		Core::Sandbox::Instance().reportAssertionViolation(info);
 	}
 }
