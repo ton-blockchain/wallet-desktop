@@ -34,6 +34,7 @@ public:
 
 	void toggle(bool enabled) override;
 	bool toggled() override;
+	void check() override;
 	void test() override;
 	void install() override;
 

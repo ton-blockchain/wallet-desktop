@@ -75,6 +75,10 @@ bool UpdateInfoProvider::toggled() {
 	return _toggled();
 }
 
+void UpdateInfoProvider::check() {
+	_toggle(true);
+}
+
 void UpdateInfoProvider::test() {
 	_updater->test();
 }
