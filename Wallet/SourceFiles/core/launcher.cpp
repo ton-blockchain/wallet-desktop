@@ -14,12 +14,15 @@
 #include "ton/ton_wallet.h"
 #include "base/platform/base_platform_info.h"
 #include "base/platform/base_platform_url_scheme.h"
-#include "base/platform/win/base_windows_h.h"
 #include "base/concurrent_timer.h"
 
 #ifdef WALLET_AUTOUPDATING_BUILD
 #include "updater/updater_instance.h"
 #endif // WALLET_AUTOUPDATING_BUILD
+
+#ifdef Q_OS_WIN
+#include "base/platform/win/base_windows_h.h"
+#endif // Q_OS_WIN
 
 #include <QtWidgets/QApplication>
 #include <QtCore/QJsonObject>
