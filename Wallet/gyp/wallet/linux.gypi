@@ -59,6 +59,10 @@
         'ldflags': [
           '-Wl,-wrap,__divmoddi4',
         ],
+      }, {
+        'ldflags': [
+          '-Wl,-wrap,__divmodti4',
+        ],
       }]
     ],
   }]],
