@@ -6,6 +6,7 @@
 //
 #include "wallet/application.h"
 
+#include "wallet/config_upgrade_checker.h"
 #include "wallet/wallet_window.h"
 #include "wallet/wallet_log.h"
 #include "wallet/ton_default_settings.h"
@@ -126,6 +127,11 @@ void Application::openWallet() {
 		_window = std::make_unique<Wallet::Window>(
 			_wallet.get(),
 			walletUpdateInfo());
+
+		const auto upgrades = base::take(_upgradeChecker)->takeUpgrades();
+		for (const auto upgrade : upgrades) {
+			_window->showConfigUpgrade(upgrade);
+		}
 		handleLaunchCommand();
 	};
 	auto opened = [=](Ton::Result<> result) {
@@ -140,6 +146,9 @@ void Application::openWallet() {
 		}
 		_wallet->start(started);
 	};
+
+	_upgradeChecker = std::make_unique<ConfigUpgradeChecker>(_wallet.get());
+
 	_wallet->open(QByteArray(), GetDefaultSettings(), std::move(opened));
 }
 

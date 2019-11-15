@@ -28,6 +28,7 @@ class Window;
 class Intro;
 class Info;
 class UpdateInfo;
+class ConfigUpgradeChecker;
 
 class Application final : public base::has_weak_ptr {
 public:
@@ -49,8 +50,9 @@ private:
 
 	const QString _path;
 	const std::unique_ptr<Ton::Wallet> _wallet;
-	std::unique_ptr<Wallet::Window> _window;
-	std::unique_ptr<Wallet::UpdateInfo> _updateInfo;
+	std::unique_ptr<Window> _window;
+	std::unique_ptr<UpdateInfo> _updateInfo;
+	std::unique_ptr<ConfigUpgradeChecker> _upgradeChecker;
 	QByteArray _launchCommand;
 
 	rpl::lifetime _lifetime;

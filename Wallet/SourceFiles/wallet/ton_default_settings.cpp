@@ -18,8 +18,9 @@ Ton::Settings GetDefaultSettings() {
 	file.open(QIODevice::ReadOnly);
 	result.config = file.readAll();
 	result.useNetworkCallbacks = false;
-	result.blockchainName = "testnet";
+	result.blockchainName = "testnet2";
 	result.configUrl = "https://test.ton.org/config.json";
+	result.version = 2;
 	return result;
 }
 

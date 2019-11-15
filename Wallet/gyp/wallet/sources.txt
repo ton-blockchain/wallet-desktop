@@ -11,6 +11,8 @@
 <(src_loc)/core/version.h
 <(src_loc)/wallet/application.cpp
 <(src_loc)/wallet/application.h
+<(src_loc)/wallet/config_upgrade_checker.cpp
+<(src_loc)/wallet/config_upgrade_checker.h
 <(src_loc)/wallet/phrases.cpp
 <(src_loc)/wallet/phrases.h
 <(src_loc)/wallet/ton_default_settings.cpp
