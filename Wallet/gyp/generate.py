@@ -41,7 +41,7 @@ if sys.platform == 'win32':
     gypFormats.append('msvs-ninja')
 elif sys.platform == 'darwin':
     # use patched gyp with Xcode project generator
-    gypScript = '../../../Libraries/gyp/gyp'
+    gypScript = '../../../ThirdParty/gyp/gyp'
     gypArguments.append('-Gxcode_upgrade_check_project_version=1030')
     gypFormats.append('xcode')
 else:
