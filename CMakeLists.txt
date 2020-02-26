@@ -46,6 +46,7 @@ set(desktop_app_skip_libs
     openal
     opus
     sp_media_key_tap
+    statusnotifieritem
 )
 set(DESKTOP_APP_LOTTIE_USE_CACHE OFF)
 

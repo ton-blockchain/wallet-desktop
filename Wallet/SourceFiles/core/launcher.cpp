@@ -288,13 +288,7 @@ int Launcher::exec() {
 	}
 	setupScale();
 
-	auto options = QJsonObject();
-	const auto tempFontConfigPath = QStandardPaths::writableLocation(
-		QStandardPaths::TempLocation
-	) + "/fc-custom-1.conf";
-	options.insert("custom_font_config_src", QString(":/fc/fc-custom.conf"));
-	options.insert("custom_font_config_dst", tempFontConfigPath);
-	Platform::Start(options);
+	Platform::Start(QJsonObject());
 	WALLET_LOG(("Platform started."));
 
 	auto result = executeApplication();
