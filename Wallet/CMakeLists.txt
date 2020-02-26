@@ -25,7 +25,9 @@ add_subdirectory(lib_storage)
 add_subdirectory(lib_lottie)
 add_subdirectory(lib_qr)
 add_subdirectory(lib_ton)
-add_subdirectory(lib_updater)
+if (NOT disable_autoupdate)
+    add_subdirectory(lib_updater)
+endif()
 add_subdirectory(lib_wallet)
 add_subdirectory(codegen)
 
@@ -64,7 +66,6 @@ PRIVATE
     desktop-app::lib_qr
     desktop-app::lib_ton
     desktop-app::lib_wallet
-    desktop-app::lib_updater
     desktop-app::external_rlottie
     desktop-app::external_qt
     desktop-app::external_qr_code_generator
@@ -72,6 +73,13 @@ PRIVATE
     desktop-app::external_auto_updates
     desktop-app::external_openssl
 )
+
+if (NOT disable_autoupdate)
+    target_link_libraries(Wallet
+    PRIVATE
+        desktop-app::lib_updater
+    )
+endif()
 
 if (DESKTOP_APP_USE_PACKAGED)
     set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -198,6 +206,6 @@ target_include_directories(Wallet PRIVATE ${src_loc})
 
 set_target_properties(Wallet PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${output_folder})
 
-if (NOT disable_autoupdate AND NOT build_macstore AND NOT build_winstore)
+if (NOT disable_autoupdate)
     add_dependencies(Wallet update_packer)
 endif()

@@ -8,6 +8,7 @@
 
 #include "wallet/config_upgrade_checker.h"
 #include "wallet/wallet_window.h"
+#include "wallet/wallet_update_info.h"
 #include "wallet/wallet_log.h"
 #include "wallet/ton_default_settings.h"
 #include "wallet/update_info_provider.h"
