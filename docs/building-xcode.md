@@ -26,6 +26,9 @@ Go to ***BuildPath*** and run
     cd ThirdParty
     
     git clone https://github.com/desktop-app/patches.git
+    cd patches
+    git checkout 4f1cffb
+    cd ../
     git clone https://chromium.googlesource.com/external/gyp
     git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
     export PATH="$PWD/depot_tools:$PATH"
@@ -40,7 +43,10 @@ Go to ***BuildPath*** and run
     LibrariesPath=`pwd`
 
     git clone https://github.com/desktop-app/patches.git
-    git clone --branch 0.9.1 https://github.com/ericniebler/range-v3
+    cd patches
+    git checkout 4f1cffb
+    cd ..
+    git clone --branch 0.10.0 https://github.com/ericniebler/range-v3
 
     cd xz-5.0.5
     CFLAGS="-mmacosx-version-min=10.12" LDFLAGS="-mmacosx-version-min=10.12" ./configure --prefix=/usr/local/macos
@@ -48,7 +54,7 @@ Go to ***BuildPath*** and run
     sudo make install
     cd ..
 
-    git clone https://github.com/madler/zlib.git
+    git clone https://github.com/desktop-app/zlib.git
     cd zlib
     CFLAGS="-mmacosx-version-min=10.12 -Werror=unguarded-availability-new" LDFLAGS="-mmacosx-version-min=10.12" ./configure --prefix=/usr/local/macos
     make $MAKE_THREADS_CNT
@@ -119,6 +125,6 @@ Go to ***BuildPath*** and run
 
 Go to ***BuildPath*/wallet-desktop/Wallet** and run
 
-    gyp/refresh.sh
+    ./configure.sh -D DESKTOP_APP_USE_PACKAGED=OFF
 
-Then launch Xcode, open ***BuildPath*/wallet-desktop/Wallet/Wallet.xcodeproj** and build for Debug / Release.
+Then launch Xcode, open ***BuildPath*/wallet-desktop/out/Wallet.xcodeproj** and build for Debug / Release.

@@ -13,7 +13,7 @@ All commands (if not stated otherwise) will be launched from **x86 Native Tools 
 
 ## Install third party software
 
-* Download **ActivePerl** installer from [https://www.activestate.com/activeperl/downloads](https://www.activestate.com/activeperl/downloads) and install to ***BuildPath*\\ThirdParty\\Perl**
+* Download **Strawberry Perl** installer from [http://strawberryperl.com/](http://strawberryperl.com/) and install to ***BuildPath*\\ThirdParty\\Strawberry**
 * Download **NASM** installer from [http://www.nasm.us](http://www.nasm.us) and install to ***BuildPath*\\ThirdParty\\NASM**
 * Download **Yasm** executable from [http://yasm.tortall.net/Download.html](http://yasm.tortall.net/Download.html), rename to *yasm.exe* and put to ***BuildPath*\\ThirdParty\\yasm**
 * Download **jom** archive from [http://download.qt.io/official_releases/jom/jom.zip](http://download.qt.io/official_releases/jom/jom.zip) and unpack to ***BuildPath*\\ThirdParty\\jom**
@@ -25,11 +25,14 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
 
     cd ThirdParty
     git clone https://github.com/desktop-app/patches.git
+    cd patches
+    git checkout 395b620
+    cd ../
     git clone https://chromium.googlesource.com/external/gyp
     cd gyp
     git checkout 9f2a7bb1
     git apply ../patches/gyp.diff
-    cd ..
+    cd ..\..
 
 Add **GYP** and **Ninja** to your PATH:
 
@@ -44,7 +47,7 @@ Add **GYP** and **Ninja** to your PATH:
 
 Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** and run
 
-    SET PATH=%cd%\ThirdParty\Perl\bin;%cd%\ThirdParty\Python27;%cd%\ThirdParty\NASM;%cd%\ThirdParty\jom;%cd%\ThirdParty\cmake\bin;%cd%\ThirdParty\yasm;%PATH%
+    SET PATH=%cd%\ThirdParty\Strawberry\perl\bin;%cd%\ThirdParty\Python27;%cd%\ThirdParty\NASM;%cd%\ThirdParty\jom;%cd%\ThirdParty\cmake\bin;%cd%\ThirdParty\yasm;%PATH%
 
     git clone --recursive https://github.com/ton-blockchain/wallet-desktop.git
 
@@ -54,7 +57,10 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     SET LibrariesPath=%cd%
 
     git clone https://github.com/desktop-app/patches.git
-    git clone --branch 0.9.1 https://github.com/ericniebler/range-v3 range-v3
+    cd patches
+    git checkout 395b620
+    cd ..
+    git clone --branch 0.10.0 https://github.com/ericniebler/range-v3 range-v3
 
     git clone https://github.com/openssl/openssl.git openssl_1_1_1
     cd openssl_1_1_1
@@ -129,11 +135,12 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     cmake --build . --target tonlib --config Release
     cd ../..
 
-    cd ../wallet-desktop/Wallet
-    gyp\refresh.bat
-
 ## Build the project
 
-* Open ***BuildPath*\\wallet-desktop\\Wallet\\Wallet.sln** in Visual Studio 2019
+Go to ***BuildPath*\\wallet-desktop\\Wallet** and run
+
+    configure.bat -D DESKTOP_APP_USE_PACKAGED=OFF
+
+* Open ***BuildPath*\\wallet-desktop\\out\\Wallet.sln** in Visual Studio 2019
 * Select Wallet project and press Build > Build Wallet (Debug and Release configurations)
 * The result Wallet.exe will be located in ***BuildPath*\\wallet-desktop\\out\\Debug** (and **Release**)
