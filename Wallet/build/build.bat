@@ -25,7 +25,7 @@ echo Building version %AppVersionStrFull% for Windows..
 echo.
 
 set "HomePath=%FullScriptPath%.."
-set "SolutionPath=%HomePath%\.."
+set "SolutionPath=%HomePath%\..\out"
 set "UpdateFile=wupdate-win-%AppVersion%"
 set "SetupFile=wsetup.%AppVersionStrFull%.exe"
 set "PortableFile=wportable.%AppVersionStrFull%.zip"
@@ -46,11 +46,11 @@ if exist %ReleasePath%\deploy\%AppVersionStrMajor%\%AppVersionStr%\ (
 
 cd "%HomePath%"
 
-call gyp\refresh.bat
+call configure.bat
 if %errorlevel% neq 0 goto error
 
 cd "%SolutionPath%"
-call ninja -C out/Release Wallet
+call cmake --build . --config Release --target Wallet
 if %errorlevel% neq 0 goto error
 
 echo.
@@ -114,7 +114,6 @@ if not exist "%DeployPath%\%UpdateFile%" goto error
 if not exist "%DeployPath%\%PortableFile%" goto error
 if not exist "%DeployPath%\%SetupFile%" goto error
 if not exist "%DeployPath%\%BinaryName%.pdb" goto error
-if not exist "%DeployPath%\%BinaryName%.exe.pdb" goto error
 md "%FinalDeployPath%"
 
 xcopy "%DeployPath%\%UpdateFile%" "%FinalDeployPath%\" /Y

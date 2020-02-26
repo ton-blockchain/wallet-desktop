@@ -58,3 +58,6 @@
 [submodule "Wallet/lib_updater"]
 	path = Wallet/lib_updater
 	url = https://github.com/desktop-app/lib_updater.git
+[submodule "cmake"]
+	path = cmake
+	url = https://github.com/desktop-app/cmake_helpers.git

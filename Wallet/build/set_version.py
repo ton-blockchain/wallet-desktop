@@ -19,6 +19,7 @@ executePath = os.getcwd()
 scriptPath = os.path.dirname(os.path.realpath(__file__))
 
 inputVersion = ''
+versionOriginal = ''
 versionMajor = ''
 versionMinor = ''
 versionPatch = ''
@@ -26,6 +27,7 @@ for arg in sys.argv:
   match = re.match(r'^\s*(\d+)\.(\d+)(\.(\d+))?\s*$', arg)
   if match:
     inputVersion = arg
+    versionOriginal = inputVersion
     versionMajor = match.group(1)
     versionMinor = match.group(2)
     versionPatch = match.group(4) if match.group(4) else '0'
@@ -78,6 +80,7 @@ replaceInFile(scriptPath + '/version', [
   [ r'(AppVersionStrMajor\s+)\d[\d\.]*', r'\g<1>' + versionMajor + '.' + versionMinor ],
   [ r'(AppVersionStrSmall\s+)\d[\d\.]*', r'\g<1>' + versionStrSmall ],
   [ r'(AppVersionStr\s+)\d[\d\.]*', r'\g<1>' + versionStr ],
+  [ r'(AppVersionOriginal\s+)\d[\d\.beta]*', r'\g<1>' + versionOriginal ],
 ])
 
 print('Patching core/version.h...')
