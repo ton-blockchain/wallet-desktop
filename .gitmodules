@@ -34,9 +34,6 @@
 [submodule "Wallet/lib_rlottie"]
 	path = Wallet/lib_rlottie
 	url = https://github.com/desktop-app/lib_rlottie.git
-[submodule "Wallet/gyp/helpers"]
-	path = Wallet/gyp/helpers
-	url = https://github.com/desktop-app/gyp_helpers.git
 [submodule "Wallet/ThirdParty/xxHash"]
 	path = Wallet/ThirdParty/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
