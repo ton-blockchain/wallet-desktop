@@ -41,13 +41,15 @@ if [ "$BuildTarget" == "linux" ]; then
   echo "Building version $AppVersionStrFull for Linux 64bit.."
   SetupFile="wsetup.$AppVersionStrFull.tar.xz"
   UpdateFile="wupdate-linux-$AppVersion"
-  ReleasePath="$HomePath/../out/Release"
+  ProjectPath="$HomePath/../out"
+  ReleasePath="$ProjectPath/Release"
   BinaryName="Wallet"
 elif [ "$BuildTarget" == "linux32" ]; then
   echo "Building version $AppVersionStrFull for Linux 32bit.."
   SetupFile="wsetup32.$AppVersionStrFull.tar.xz"
   UpdateFile="wupdate-linux32-$AppVersion"
-  ReleasePath="$HomePath/../out/Release"
+  ProjectPath="$HomePath/../out"
+  ReleasePath="$ProjectPath/Release"
   BinaryName="Wallet"
 elif [ "$BuildTarget" == "mac" ]; then
   echo "Building version $AppVersionStrFull for OS X 10.8+.."
@@ -56,7 +58,8 @@ elif [ "$BuildTarget" == "mac" ]; then
   fi
   SetupFile="wsetup.$AppVersionStrFull.dmg"
   UpdateFile="wupdate-mac-$AppVersion"
-  ReleasePath="$HomePath/../out/Release"
+  ProjectPath="$HomePath/../out"
+  ReleasePath="$ProjectPath/Release"
   BinaryName="Wallet"
 else
   Error "Invalid target!"
@@ -74,10 +77,12 @@ if [ "$BuildTarget" == "linux" ] || [ "$BuildTarget" == "linux32" ]; then
     Error "Backup folder not found!"
   fi
 
-  gyp/refresh.sh
+  ./configure.sh
 
+  cd $ProjectPath
+  cmake --build . --config Release --target Wallet -- -j8
   cd $ReleasePath
-  make -j4
+
   echo "$BinaryName build complete!"
 
   if [ ! -f "$ReleasePath/$BinaryName" ]; then
@@ -145,8 +150,11 @@ if [ "$BuildTarget" == "mac" ]; then
     Error "Backup path not found!"
   fi
 
-  gyp/refresh.sh
-  xcodebuild -project Wallet.xcodeproj -alltargets -configuration Release build
+  ./configure.sh
+
+  cd $ProjectPath
+  cmake --build . --config Release --target Wallet
+  cd $ReleasePath
 
   if [ ! -d "$ReleasePath/$BinaryName.app" ]; then
     Error "$BinaryName.app not found!"
@@ -194,7 +202,7 @@ if [ "$BuildTarget" == "mac" ]; then
 
   echo "Beginning notarization process."
   set +e
-  xcrun altool --notarize-app --primary-bundle-id "org.ton.wallet.desktop" --username "$AC_USERNAME" --password "@keychain:AC_PASSWORD" --file "$SetupFile" 2> request_uuid.txt
+  xcrun altool --notarize-app --primary-bundle-id "org.ton.wallet.desktop" --username "$AC_USERNAME" --password "@keychain:AC_PASSWORD" --file "$SetupFile" > request_uuid.txt
   set -e
   while IFS='' read -r line || [[ -n "$line" ]]; do
     Prefix=$(echo $line | cut -d' ' -f 1)
@@ -214,7 +222,7 @@ if [ "$BuildTarget" == "mac" ]; then
   LogFile=
   while [[ "$RequestStatus" == "" ]]; do
     sleep 5
-    xcrun altool --notarization-info "$RequestUUID" --username "$AC_USERNAME" --password "@keychain:AC_PASSWORD" 2> request_result.txt
+    xcrun altool --notarization-info "$RequestUUID" --username "$AC_USERNAME" --password "@keychain:AC_PASSWORD" > request_result.txt
     while IFS='' read -r line || [[ -n "$line" ]]; do
       Prefix=$(echo $line | cut -d' ' -f 1)
       Value=$(echo $line | cut -d' ' -f 2)

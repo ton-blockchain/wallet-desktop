@@ -137,19 +137,12 @@ elseif (APPLE)
     set_target_properties(Wallet PROPERTIES RESOURCE ${icons_path})
     target_sources(Wallet PRIVATE ${icons_path})
 
-    if (NOT build_macstore)
+    if (NOT build_macstore AND NOT DESKTOP_APP_DISABLE_CRASH_REPORTS)
         add_custom_command(TARGET Wallet
         PRE_LINK
-            COMMAND mkdir -p $<TARGET_FILE_DIR:Wallet>/../Frameworks
-            COMMAND cp $<TARGET_FILE:Updater> $<TARGET_FILE_DIR:Wallet>/../Frameworks/
+            COMMAND mkdir -p $<TARGET_FILE_DIR:Wallet>/../Helpers
+            COMMAND cp ${libs_loc}/crashpad/out/$<IF:$<CONFIG:Debug>,Debug,Release>/crashpad_handler $<TARGET_FILE_DIR:Wallet>/../Helpers/
         )
-        if (NOT DESKTOP_APP_DISABLE_CRASH_REPORTS)
-            add_custom_command(TARGET Wallet
-            PRE_LINK
-                COMMAND mkdir -p $<TARGET_FILE_DIR:Wallet>/../Helpers
-                COMMAND cp ${libs_loc}/crashpad/out/$<IF:$<CONFIG:Debug>,Debug,Release>/crashpad_handler $<TARGET_FILE_DIR:Wallet>/../Helpers/
-            )
-        endif()
     endif()
 elseif (LINUX)
     #if (NOT WALLET_DISABLE_GTK_INTEGRATION)

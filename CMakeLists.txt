@@ -42,6 +42,7 @@ set(desktop_app_skip_libs
     hunspell
     iconv
     lz4
+    minizip
     openal
     opus
     sp_media_key_tap
