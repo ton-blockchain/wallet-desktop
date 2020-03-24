@@ -87,6 +87,12 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     msbuild zlibstat.vcxproj /property:Configuration=ReleaseWithoutAsm
     cd ..\..\..\..
 
+    git clone https://github.com/desktop-app/lzma.git
+    cd lzma\C\Util\LzmaLib
+    msbuild LzmaLib.sln /property:Configuration=Debug
+    msbuild LzmaLib.sln /property:Configuration=Release
+    cd ..\..\..\..
+
     git clone https://github.com/google/breakpad
     cd breakpad
     git checkout a1dbcdcb43

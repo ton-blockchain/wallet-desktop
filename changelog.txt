@@ -1,3 +1,9 @@
+0.9.4 (15.11.19)
+
+- State explicitly that addresses are for Test Grams only.
+- Fix crash when sending 0 grams.
+- Migrate to testnet2.
+
 0.9.3 (04.11.19)
 
 - Allow resizing the main window.
