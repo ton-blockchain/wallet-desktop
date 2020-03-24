@@ -1,3 +1,7 @@
+0.9.5 (24.03.20)
+
+- Update config for testnet2 in tonlib.
+
 0.9.4 (15.11.19)
 
 - State explicitly that addresses are for Test Grams only.
