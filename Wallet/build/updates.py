@@ -38,8 +38,6 @@ def finish(code, error = ''):
     os.chdir(executePath)
     sys.exit(code)
 
-os.chdir(scriptPath + '/..')
-
 if 'AC_USERNAME' not in os.environ:
     finish(1, 'AC_USERNAME not found!')
 username = os.environ['AC_USERNAME']
@@ -51,20 +49,22 @@ outputFolder = 'updates/' + today
 archive = filePrefix + '_macOS_' + today + '.zip'
 
 if building:
+    os.chdir(scriptPath + '/..')
     print('Building debug version for OS X 10.12+..')
 
     if os.path.exists('../out/Debug/' + outputFolder):
         finish(1, 'Todays updates version exists.')
 
-    result = subprocess.call('gyp/refresh.sh', shell=True)
+    result = subprocess.call('./configure.sh', shell=True)
     if result != 0:
-        finish(1, 'While calling GYP.')
+        finish(1, 'While calling CMake.')
 
+    os.chdir('../out')
     result = subprocess.call('xcodebuild -project ' + projectName + '.xcodeproj -alltargets -configuration Debug build', shell=True)
     if result != 0:
         finish(1, 'While building ' + projectName + '.')
 
-    os.chdir('../out/Debug')
+    os.chdir('Debug')
     if not os.path.exists(projectName + '.app'):
         finish(1, projectName + '.app not found.')
 
@@ -227,6 +227,8 @@ if composing:
     print('\n\nEdit:\n')
     print('vi ' + commandPath)
     finish(0)
+else:
+    os.chdir(scriptPath + '/..')
 
 if not os.path.exists(commandPath):
     finish(1, 'Command file not found.')
