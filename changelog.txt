@@ -1,3 +1,7 @@
+0.9.6 (07.04.20)
+
+- Use encrypted transaction comments.
+
 0.9.5 (24.03.20)
 
 - Update config for testnet2 in tonlib.
