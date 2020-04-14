@@ -363,8 +363,19 @@ void Launcher::initAppDataPath() {
 void Launcher::processArguments() {
 	_arguments = readArguments(_argc, _argv);
 
-	auto nextUrl = false;
+	enum class UrlState {
+		None,
+		Next,
+		Done,
+		Error,
+	};
+	auto urlState = UrlState::None;
 	for (const auto &argument : _arguments) {
+		if (urlState == UrlState::Done) {
+			WALLET_LOG(("App Error: Ignoring URL argument (not last one)."));
+			_openedUrl = QString();
+			urlState = UrlState::Error;
+		}
 		if (argument == "cleanup") {
 			_action = Action::Cleanup;
 		} else if (argument == "installupdate") {
@@ -372,12 +383,21 @@ void Launcher::processArguments() {
 			break;
 		} else if (argument == "--verbose") {
 			_verbose = true;
-		} else if (nextUrl) {
+		} else if (urlState == UrlState::Next) {
 			_openedUrl = argument;
-		} else if (argument == "--") {
-			nextUrl = true;
+			urlState = UrlState::Done;
+		} else if (urlState == UrlState::None && argument == "--") {
+			urlState = UrlState::Next;
 		}
 	}
+#ifdef Q_OS_WIN
+	if (!_openedUrl.isEmpty()
+		&& !base::Platform::CheckUrlScheme(CustomSchemeDescriptor(this))) {
+		WALLET_LOG(("App Error: Ignoring URL argument (bad registration)."));
+		_openedUrl = QString();
+		registerUrlScheme();
+	}
+#endif // Q_OS_WIN
 }
 
 int Launcher::executeApplication() {
