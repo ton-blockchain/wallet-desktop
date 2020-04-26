@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/config">
+    <file alias="default.json">../config-test-default.json</file>
     <file alias="test-default.json">../config-test-default.json</file>
   </qresource>
 </RCC>
