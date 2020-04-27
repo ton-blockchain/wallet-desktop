@@ -88,7 +88,8 @@ Updater::InfoForRegistry GetInfoForRegistry() {
 #endif // WALLET_AUTOUPDATING_BUILD
 
 base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
-		not_null<Launcher*> launcher) {
+		not_null<Launcher*> launcher,
+		bool updateIcon = false) {
 	auto result = base::Platform::UrlSchemeDescriptor();
 	result.executable = base::Integration::Instance().executablePath();
 	result.protocol = "ton";
@@ -100,6 +101,7 @@ base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
 	result.longAppName = "GramWallet";
 	result.displayAppName = "Gram Wallet";
 	result.displayAppDescription = "Desktop wallet for TON";
+	result.forceUpdateIcon = updateIcon;
 	return result;
 }
 
@@ -155,7 +157,24 @@ QString Launcher::computeWorkingPathBase() {
 }
 
 void Launcher::registerUrlScheme() {
-	base::Platform::RegisterUrlScheme(CustomSchemeDescriptor(this));
+	constexpr auto kSchemeVersion = 2;
+	const auto path = _workingPath + "scheme_version";
+	const auto version = [&] {
+		auto file = QFile(path);
+		if (!file.open(QIODevice::ReadOnly)) {
+			return 0;
+		}
+		return file.readAll().toInt();
+	}();
+	const auto guard = gsl::finally([&] {
+		if (version < kSchemeVersion) {
+			auto file = QFile(path);
+			if (file.open(QIODevice::WriteOnly)) {
+				file.write(QString::number(kSchemeVersion).toUtf8());
+			}
+		}
+	});
+	base::Platform::RegisterUrlScheme(CustomSchemeDescriptor(this, version < kSchemeVersion));
 }
 
 void Launcher::cleanupUrlScheme() {
