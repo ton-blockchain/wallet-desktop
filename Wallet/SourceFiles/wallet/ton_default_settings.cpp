@@ -19,13 +19,13 @@ Ton::Settings GetDefaultSettings() {
 	test.open(QIODevice::ReadOnly);
 	result.test.config = test.readAll();
 	result.test.blockchainName = "testnet2";
-	result.test.configUrl = "https://test.ton.org/config.json";
+	result.test.configUrl = "https://ton.org/config-test.json";
 
 	auto main = QFile(":/config/default.json");
 	main.open(QIODevice::ReadOnly);
 	result.main.config = main.readAll();
 	result.main.blockchainName = "mainnet";
-	result.main.configUrl = "https://test.ton.org/ton-global-main.config.json";
+	result.main.configUrl = "https://ton.org/config.json";
 
 	result.useNetworkCallbacks = false;
 	result.version = 3;
