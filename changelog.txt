@@ -1,3 +1,8 @@
+0.9.8 (30.04.20)
+
+- Copy wallet address to clipboard on click.
+- Support restricted wallets.
+
 0.9.7 (11.04.20)
 
 - Update blockchain library.
