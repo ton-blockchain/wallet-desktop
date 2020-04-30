@@ -21,14 +21,15 @@ Ton::Settings GetDefaultSettings() {
 	result.test.blockchainName = "testnet2";
 	result.test.configUrl = "https://ton.org/config-test.json";
 
-	auto main = QFile(":/config/default.json");
-	main.open(QIODevice::ReadOnly);
-	result.main.config = main.readAll();
-	result.main.blockchainName = "mainnet";
-	result.main.configUrl = "https://ton.org/config.json";
+	//auto main = QFile(":/config/default.json"); // #TODO postponed
+	//main.open(QIODevice::ReadOnly);
+	//result.main.config = main.readAll();
+	//result.main.blockchainName = "mainnet";
+	//result.main.configUrl = "https://ton.org/config.json";
 
 	result.useNetworkCallbacks = false;
-	result.version = 3;
+	result.useTestNetwork = true; // #TODO postponed
+	result.version = 2;
 	return result;
 }
 
