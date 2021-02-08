@@ -1,6 +1,14 @@
 {
   "liteservers": [
     {
+      "ip": -1655045702,
+      "port":24795,
+      "id": {
+        "@type": "pub.ed25519",
+        "key": "FAyvdtgqlq/DGgA+H59tow+H+BNwOLp8VvGiy53gpIU="
+      }
+    },
+    {
       "ip": 1137658550,
       "port": 4924,
       "id": {
@@ -17,6 +25,22 @@
       "seqno": 0,
       "root_hash": "F6OpKZKqvqeFp6CQmFomXNMfMj2EnaUSOXN+Mh+wVWk=",
       "file_hash": "XplPz01CXAps5qeSWUtxcyBfdAo5zVb1N979KLSKD24="
-    }
+    },
+    "init_block" : {
+	    "file_hash": "eZ6Czg3S9Lt8ZG2qMrCtUipexg1u5O+YWHTfnkf9RGY=",
+	    "seqno": 8607859,
+	    "root_hash": "IiZRlGFtW62Qyy2IWND3Rn7RYpJZZdWlGk2rEWAH8NE=",
+	    "workchain": -1,
+	    "shard": -9223372036854775808
+    },
+    "hardforks": [
+	    {
+		    "file_hash": "t/9VBPODF7Zdh4nsnA49dprO69nQNMqYL+zk5bCjV/8=",
+		    "seqno": 8536841,
+		    "root_hash": "08Kpc9XxrMKC6BF/FeNHPS3MEL1/Vi/fQU/C9ELUrkc=",
+		    "workchain": -1,
+		    "shard": -9223372036854775808
+	    }
+    ]
   }
 }
