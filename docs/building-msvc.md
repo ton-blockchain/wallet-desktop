@@ -5,6 +5,10 @@
 - [Clone source code and prepare libraries](#clone-source-code-and-prepare-libraries)
 - [Build the project](#build-the-project)
 
+## Automatic build
+You can try an auto-build script [compile.sh][auto-build/windows10/compile.bat].
+Launch **x86 Native Tools Command Prompt for VS 2019.bat** console and execute compile.bat.
+
 ## Prepare folder
 
 Choose an empty folder for the future build, for example **D:\\Projects**. It will be named ***BuildPath*** in the rest of this document. Create two folders there, ***BuildPath*\\ThirdParty** and ***BuildPath*\\Libraries**.
@@ -109,7 +113,7 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     gyp dump_syms.gyp
     msbuild dump_syms.vcxproj /property:Configuration=Release
     # If above command fails with error "fatal error C1083: Cannot open include file: 'dia2.h': No such file or directory"
-    # try to open dump_syms.vcxproj with Visual Studio 2019 and on start it will ask whether you want to Retarget Projects - click OK and reexecute the command.    
+    # try to open dump_syms.vcxproj with Visual Studio 2019 and on start it will ask whether you want to Retarget Projects - click OK and reexecute the command.
     cd ..\..\..\..\..
 
     git clone git://code.qt.io/qt/qt5.git qt_5_12_8
@@ -129,7 +133,7 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     cd ..
 
     git clone https://github.com/newton-blockchain/ton.git
-    cd ton   
+    cd ton
     git submodule init
     git submodule update third-party/crc32c
     mkdir build-debug
