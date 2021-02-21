@@ -19,7 +19,7 @@ jobs:
       - name: Find & copy binaries
         run: |
           mkdir artifacts
-          cp wallet-desktop/out/Release/bin/Wallet.tar.gz artifacts
+          cp wallet-desktop/auto-build/ubuntu-18.04/wallet-desktop/out/Release/bin/Wallet.tar.gz artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
