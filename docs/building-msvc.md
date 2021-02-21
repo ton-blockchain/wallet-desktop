@@ -6,7 +6,7 @@
 - [Build the project](#build-the-project)
 
 ## Automatic build
-You can try an auto-build script [compile.sh][auto-build/windows10/compile.bat].
+You can try an auto-build script [compile.bat](auto-build/windows10/compile.bat).
 Launch **x86 Native Tools Command Prompt for VS 2019.bat** console and execute compile.bat.
 
 ## Prepare folder
