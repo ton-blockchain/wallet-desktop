@@ -141,7 +141,6 @@ cd ../../..
 
 git clone https://github.com/newton-blockchain/ton.git
 cd ton
-git checkout eecf05ca
 git submodule init
 git submodule update third-party/crc32c
 mkdir build-debug
