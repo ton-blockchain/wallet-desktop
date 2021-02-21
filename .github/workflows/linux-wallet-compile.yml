@@ -7,9 +7,13 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps: 
+      - name: Check out current repository
+        uses: actions/checkout@v2   
+        with:
+          path: wallet-desktop
       - name: Compile linux desktop wallet
         run: |
-          cd auto-build/ubuntu-18.04
+          cd wallet-desktop/auto-build/ubuntu-18.04
           sudo chmod +x compile.sh
           sudo ./compile.sh
       - name: Find & copy binaries
