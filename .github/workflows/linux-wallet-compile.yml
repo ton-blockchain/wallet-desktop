@@ -1,0 +1,23 @@
+name: C/C++ CI Ubuntu 18.04 x86-64 Newton Desktop wallet compile
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps: 
+      - name: Compile linux desktop wallet
+        run: |
+          cd auto-build/ubuntu-18.04
+          sudo chmod +x compile.sh
+          sudo ./compile.sh
+      - name: Find & copy binaries
+        run: |
+          mkdir artifacts
+          cp wallet-desktop/out/Release/bin/Wallet.tar.gz artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: newton-linux-desktop-wallet
+          path: artifacts
