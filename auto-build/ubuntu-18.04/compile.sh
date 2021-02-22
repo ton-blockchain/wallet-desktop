@@ -172,4 +172,4 @@ cd ../out/Release
 make $MAKE_THREADS_CNT
 
 cd bin
-tar -czvf Wallet.tar.gz Wallet
+strip ./Wallet
