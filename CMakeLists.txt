@@ -1,4 +1,4 @@
-# This file is part of Gram Wallet Desktop,
+# This file is part of TON Wallet Desktop,
 # a desktop application for the TON Blockchain project.
 #
 # For license and copyright information please follow this link:
@@ -17,7 +17,7 @@ desktop_app_parse_version(Wallet/build/version)
 project(Wallet
     LANGUAGES C CXX
     VERSION ${desktop_app_version_cmake}
-    DESCRIPTION "Test Gram Wallet"
+    DESCRIPTION "Test TON Wallet"
     HOMEPAGE_URL "https://wallet.ton.org"
 )
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Wallet)
