@@ -122,6 +122,10 @@ cmake --build . --target tonlib --config Release
 cd %LibrariesPath%\..
 git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
 
+cd wallet-desktop
+git submodule update --remote Wallet/lib_wallet
+cd ..
+
 cd wallet-desktop\Wallet
 python --version
 call configure.bat -D DESKTOP_APP_USE_PACKAGED=OFF
