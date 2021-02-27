@@ -23,6 +23,9 @@ add-apt-repository --remove ppa:ubuntu-toolchain-r/test -y
 MAKE_THREADS_CNT=-j8
 
 git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
+cd wallet-desktop
+git submodule update --remote Wallet/lib_wallet
+cd ..
 
 mkdir Libraries
 cd Libraries
