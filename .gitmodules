@@ -21,10 +21,10 @@
 	url = https://github.com/desktop-app/lib_ui.git
 [submodule "Wallet/lib_tl"]
 	path = Wallet/lib_tl
-	url = https://github.com/desktop-app/lib_tl.git
+	url = https://github.com/newton-blockchain/lib_tl.git
 [submodule "Wallet/lib_ton"]
 	path = Wallet/lib_ton
-	url = https://github.com/desktop-app/lib_ton.git
+	url = https://github.com/newton-blockchain/lib_ton.git
 [submodule "Wallet/ThirdParty/rlottie"]
 	path = Wallet/ThirdParty/rlottie
 	url = https://github.com/desktop-app/rlottie.git
@@ -39,7 +39,7 @@
 	url = https://github.com/desktop-app/lib_storage.git
 [submodule "Wallet/lib_wallet"]
 	path = Wallet/lib_wallet
-	url = https://github.com/desktop-app/lib_wallet.git
+	url = https://github.com/newton-blockchain/lib_wallet.git
 [submodule "Wallet/ThirdParty/expected"]
 	path = Wallet/ThirdParty/expected
 	url = https://github.com/TartanLlama/expected
