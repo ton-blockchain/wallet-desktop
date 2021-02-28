@@ -9,7 +9,7 @@ if [ ! -d "$FullScriptPath/../../../DesktopPrivate" ]; then
   echo "This script is for building the autoupdating version of Gram Wallet."
   echo ""
   echo "For building custom versions please visit the build instructions page at:"
-  echo "https://github.com/ton-blockchain/wallet-desktop/#build-instructions"
+  echo "https://github.com/newton-blockchain/wallet-desktop/#build-instructions"
   exit
 fi
 

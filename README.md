@@ -1,4 +1,4 @@
-# [Test Gram Wallet][gram_wallet] (Desktop)
+# [Test TON Wallet][ton_wallet] (Desktop)
 
 This is the source code and build instructions for a TON Testnet Wallet implementation for desktops.
 
@@ -34,7 +34,7 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * [GYP/CMake on GNU/Linux][cmake]
 
 [//]: # (LINKS)
-[gram_wallet]: https://wallet.ton.org
+[ton_wallet]: https://wallet.ton.org
 [license]: LICENSE
 [msvc]: docs/building-msvc.md
 [xcode]: docs/building-xcode.md
