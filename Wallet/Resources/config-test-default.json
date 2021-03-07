@@ -7,14 +7,6 @@
         "@type": "pub.ed25519",
         "key": "FAyvdtgqlq/DGgA+H59tow+H+BNwOLp8VvGiy53gpIU="
       }
-    },
-    {
-      "ip": 1137658550,
-      "port": 4924,
-      "id": {
-        "@type": "pub.ed25519",
-        "key": "peJTw/arlRfssgTuf9BMypJzqOi7SXEqSPSWiEw2U1M="
-      }
     }
   ],
   "validator": {
@@ -27,9 +19,9 @@
       "file_hash": "XplPz01CXAps5qeSWUtxcyBfdAo5zVb1N979KLSKD24="
     },
     "init_block" : {
-	    "file_hash": "eZ6Czg3S9Lt8ZG2qMrCtUipexg1u5O+YWHTfnkf9RGY=",
-	    "seqno": 8607859,
-	    "root_hash": "IiZRlGFtW62Qyy2IWND3Rn7RYpJZZdWlGk2rEWAH8NE=",
+	    "root_hash": "jvVQl+xDrVGdpXAsrreAQkLGVeZ/RjKOMEJY+Y3QTMI=",
+	    "seqno": 10176065,
+	    "file_hash": "MMhXPS8zAC2UVB+6u3+KoY0EJWypGMskptxMdzgFCa0=",
 	    "workchain": -1,
 	    "shard": -9223372036854775808
     },
