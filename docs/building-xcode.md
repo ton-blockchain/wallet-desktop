@@ -1,3 +1,7 @@
+## Automatic build
+You can try an auto-build script for macOS 10.15 [compile.sh](../auto-build/macos-10.15/compile.sh).
+For future references we left below the original instructions from ton-blockchain repository for MacOS 10.1.
+
 ## Build instructions for Xcode 10.1
 
 ### Prepare folder
