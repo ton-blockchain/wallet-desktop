@@ -1,0 +1,25 @@
+name: C/C++ CI MacOS 10.15 Newton Desktop wallet compile
+on: [pull_request,workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-10.15
+    steps: 
+      - name: Check out current repository
+        uses: actions/checkout@v2   
+        with:
+          path: wallet-desktop
+      - name: Compile macos desktop wallet
+        run: |
+          cd wallet-desktop/auto-build/macos-10.15
+          chmod +x compile.sh
+          ./compile.sh
+      - name: Find & copy binaries
+        run: |
+          mkdir artifacts
+          chmod -R 777 wallet-desktop/auto-build/macos-10.15/wallet-desktop/out/Release/Wallet.app
+          cp wallet-desktop/auto-build/macos-10.15/wallet-desktop/out/Release/Wallet.app artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: newton-macos-desktop-wallet
+          path: artifacts
