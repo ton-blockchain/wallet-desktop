@@ -1,7 +1,7 @@
 ## Automatic build
 You can try an auto-build script for macOS 10.15 [compile.sh](../auto-build/macos-10.15/compile.sh).
 
-The latest compiled TON Wallet can be also downloaded from our [Git actions](https://github.com/newton-blockchain/wallet-desktop/actions/workflows/macos-wallet-compile.yml).
+The latest compiled TON Wallet can also be downloaded from our [Git actions](https://github.com/newton-blockchain/wallet-desktop/actions/workflows/macos-wallet-compile.yml).
 Do not forget to apply following commands after you have extracted the artifact:
 ```console
 sudo chmod -R 777 Wallet.app
