@@ -19,7 +19,7 @@ Ton::Settings GetDefaultSettings() {
 	test.open(QIODevice::ReadOnly);
 	result.test.config = test.readAll();
 	result.test.blockchainName = "testnet2";
-	result.test.configUrl = "https://newton-blockchain.github.io/ton-global-lite-client.config.json";
+	result.test.configUrl = "https://newton-blockchain.github.io/global.config.json";
 
 	//auto main = QFile(":/config/default.json"); // #TODO postponed
 	//main.open(QIODevice::ReadOnly);
