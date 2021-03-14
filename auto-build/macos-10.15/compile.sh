@@ -8,7 +8,16 @@ brew install automake cmake fdk-aac git lame libass libtool libvorbis libvpx nin
 
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
-git clone --recursive https://github.com/ashulepov/wallet-desktop.git
+rootPath=`pwd`
+
+git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
+
+cd wallet-desktop/Wallet/ThirdParty/rlottie
+git fetch
+git checkout master
+git pull
+
+cd $rootPath
 
 mkdir ThirdParty
 cd ThirdParty
@@ -77,7 +86,7 @@ cd gtest
 git checkout d62d6c6556
 cd ../../..
 
-git apply ../../../wallet-desktop/install/crashpad.patch
+git apply $rootPath/wallet-desktop/auto-build/macos-10.15/crashpad.patch
 
 build/gyp_crashpad.py -Dmac_deployment_target=10.10
 ninja -C out/Debug
@@ -113,7 +122,7 @@ cd ..
 
 LibrariesPath=`pwd`
 
-git clone https://github.com/ton-blockchain/ton.git
+git clone https://github.com/newton-blockchain/ton.git
 cd ton
 git submodule init
 git submodule update third-party/crc32c
@@ -126,12 +135,11 @@ mkdir build
 cd build
 cmake -DTON_USE_ROCKSDB=OFF -DTON_USE_ABSEIL=OFF -DTON_ARCH= -DTON_ONLY_TONLIB=ON -DOPENSSL_FOUND=1 -DOPENSSL_INCLUDE_DIR=$LibrariesPath/openssl_1_1_1/include -DOPENSSL_CRYPTO_LIBRARY=$LibrariesPath/openssl_1_1_1/libcrypto.a -DZLIB_FOUND=1 -DZLIB_INCLUDE_DIR=$LibrariesPath/zlib -DZLIB_LIBRARY=/usr/local/macos/lib/libz.a -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.12 -DCMAKE_CXX_FLAGS="-stdlib=libc++" -DCMAKE_BUILD_TYPE=Release ..
 make $MAKE_THREADS_CNT tonlib
-cd ../..
 
-cd ../../wallet-desktop/Wallet/
+cd $rootPath/wallet-desktop/Wallet/
 ./configure.sh -D DESKTOP_APP_USE_PACKAGED=OFF
 
-git apply ../install/wallet.patch
+git apply $rootPath/wallet-desktop/auto-build/macos-10.15/wallet.patch
 
 cd ../out
 
