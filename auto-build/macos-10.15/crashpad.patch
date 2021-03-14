@@ -1,0 +1,17 @@
+Index: tools/crashpad_database_util.cc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tools/crashpad_database_util.cc b/tools/crashpad_database_util.cc
+--- a/tools/crashpad_database_util.cc	(revision feb3aa3923dd72b1ffb6d020d7c2636757f0c203)
++++ b/tools/crashpad_database_util.cc	(date 1610629714230)
+@@ -540,7 +540,7 @@
+     return EXIT_FAILURE;
+   }
+
+-  for (const base::FilePath new_report_path : options.new_report_paths) {
++  for (const base::FilePath& new_report_path : options.new_report_paths) {
+     scoped_ptr<FileReaderInterface> file_reader;
+
+     bool is_stdin = false;
