@@ -1,0 +1,108 @@
+Index: Wallet/lib_base/base/platform/mac/base_info_mac.mm
+<+>UTF-8
+===================================================================
+diff --git a/Wallet/lib_base/base/platform/mac/base_info_mac.mm b/Wallet/lib_base/base/platform/mac/base_info_mac.mm
+--- a/Wallet/lib_base/base/platform/mac/base_info_mac.mm	(revision b61b9d29917b06bb383858e261d94712979d2cef)
++++ b/Wallet/lib_base/base/platform/mac/base_info_mac.mm	(date 1610636028831)
+@@ -43,7 +43,7 @@
+ 	}
+ 	QStringList words;
+ 	QString word;
+-	for (const QChar ch : model) {
++	for (const QChar& ch : model) {
+ 		if (!ch.isLetter()) {
+ 			continue;
+ 		}
+@@ -59,7 +59,7 @@
+ 		words.push_back(word);
+ 	}
+ 	QString result;
+-	for (const QString word : words) {
++	for (const QString& word : words) {
+ 		if (!result.isEmpty()
+ 			&& word != "Mac"
+ 			&& word != "Book") {
+Index: Wallet/lib_wallet/wallet/wallet_common.cpp
+<+>UTF-8
+===================================================================
+diff --git a/Wallet/lib_wallet/wallet/wallet_common.cpp b/Wallet/lib_wallet/wallet/wallet_common.cpp
+--- a/Wallet/lib_wallet/wallet/wallet_common.cpp	(revision a64bf58e272edafd9d77b0f69ae59e88b9186240)
++++ b/Wallet/lib_wallet/wallet/wallet_common.cpp	(date 1610636519668)
+@@ -42,7 +42,7 @@
+ 		trimmed.append('0');
+ 	}
+ 	auto zeros = 0;
+-	for (const auto ch : trimmed) {
++	for (const auto& ch : trimmed) {
+ 		if (ch == '0') {
+ 			++zeros;
+ 		} else {
+Index: Wallet/lib_storage/storage/cache/storage_cache_cleaner.cpp
+<+>UTF-8
+===================================================================
+diff --git a/Wallet/lib_storage/storage/cache/storage_cache_cleaner.cpp b/Wallet/lib_storage/storage/cache/storage_cache_cleaner.cpp
+--- a/Wallet/lib_storage/storage/cache/storage_cache_cleaner.cpp	(revision 57027c7d6c071f0d958576a530c7c0411d8d4274)
++++ b/Wallet/lib_storage/storage/cache/storage_cache_cleaner.cpp	(date 1610636171343)
+@@ -53,7 +53,7 @@
+ void CleanerObject::start() {
+ 	const auto entries = QDir(_base).entryList(
+ 		QDir::Dirs | QDir::NoDotAndDotDot);
+-	for (const auto entry : entries) {
++	for (const auto& entry : entries) {
+ 		_queue.push_back(entry);
+ 	}
+ 	if (const auto version = ReadVersionValue(_base)) {
+Index: Wallet/lib_storage/storage/cache/storage_cache_database_object.cpp
+<+>UTF-8
+===================================================================
+diff --git a/Wallet/lib_storage/storage/cache/storage_cache_database_object.cpp b/Wallet/lib_storage/storage/cache/storage_cache_database_object.cpp
+--- a/Wallet/lib_storage/storage/cache/storage_cache_database_object.cpp	(revision 57027c7d6c071f0d958576a530c7c0411d8d4274)
++++ b/Wallet/lib_storage/storage/cache/storage_cache_database_object.cpp	(date 1610636182578)
+@@ -1319,7 +1319,7 @@
+ 	const auto entries = QDir(_base).entryList(
+ 		QDir::Dirs | QDir::NoDotAndDotDot);
+ 	auto versions = base::flat_set<Version>();
+-	for (const auto entry : entries) {
++	for (const auto& entry : entries) {
+ 		versions.insert(entry.toInt());
+ 	}
+ 	auto result = Version();
+Index: Wallet/codegen/codegen/style/generator.cpp
+<+>UTF-8
+===================================================================
+diff --git a/Wallet/codegen/codegen/style/generator.cpp b/Wallet/codegen/codegen/style/generator.cpp
+--- a/Wallet/codegen/codegen/style/generator.cpp	(revision f6431b149b199238b5bd8f315c656780c1e3bcd1)
++++ b/Wallet/codegen/codegen/style/generator.cpp	(date 1610636028831)
+@@ -387,7 +387,7 @@
+ 	} else if (includes.isEmpty()) {
+ 		return true;
+ 	}
+-	for (const auto base : includes) {
++	for (const auto& base : includes) {
+ 		header_->include("styles/" + base + ".h");
+ 	}
+ 	header_->newline();
+@@ -1214,7 +1214,7 @@
+ 			<< png3x.width() << "x" << png3x.height();
+ 		return result;
+ 	}
+-	for (const auto modifierName : modifiers) {
++	for (const auto& modifierName : modifiers) {
+ 		if (const auto modifier = GetModifier(modifierName)) {
+ 			modifier(png1x);
+ 			modifier(png2x);
+Index: Wallet/lib_ui/ui/widgets/menu.cpp
+<+>UTF-8
+===================================================================
+diff --git a/Wallet/lib_ui/ui/widgets/menu.cpp b/Wallet/lib_ui/ui/widgets/menu.cpp
+--- a/Wallet/lib_ui/ui/widgets/menu.cpp	(revision 9086052985c02fed7c7f6990ab9462c2e9ec8f14)
++++ b/Wallet/lib_ui/ui/widgets/menu.cpp	(date 1610636449650)
+@@ -19,7 +19,7 @@
+ 	auto result = TextWithEntities();
+ 	result.text.reserve(text.size());
+ 	auto afterAmpersand = false;
+-	for (const auto ch : text) {
++	for (const auto& ch : text) {
+ 		if (afterAmpersand) {
+ 			afterAmpersand = false;
+ 			if (ch == '&') {
