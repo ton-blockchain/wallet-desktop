@@ -1,0 +1,36 @@
+name: C/C++ CI Windows Newton Desktop wallet compile
+
+on: [pull_request,workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps: 
+      - name: Check out current repository
+        uses: actions/checkout@v2   
+        with:
+          path: wallet-desktop
+          
+      - name: Setup msbuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
+  
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x86
+
+      - name: Compile windows desktop wallet
+        run:  |
+          cd wallet-desktop\auto-build\windows
+          compile.bat
+          
+      - name: Find & copy binaries
+        run: |
+          mkdir artifacts
+          cp wallet-desktop\auto-build\windows\wallet-desktop\out\Debug\Wallet.exe artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: newton-windows-desktop-wallet
+          path: artifacts
