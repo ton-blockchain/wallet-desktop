@@ -1,3 +1,8 @@
+REM Execute this batch file in "x86 Native Tools Command Prompt for VS 2019" console
+REM If you have a Professional or Community edition then update the path below C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise
+
+set root=%cd%
+
 mkdir ThirdParty
 mkdir Libraries
 
@@ -21,9 +26,11 @@ del nasm.zip
 curl -o yasm.zip http://www.tortall.net/projects/yasm/releases/vsyasm-1.3.0-win64.zip
 unzip -q yasm.zip -d yasm
 del yasm.zip
+
 curl -o ninja.zip -LO https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-win.zip
 unzip -q ninja.zip -d Ninja
 del ninja.zip
+
 curl -o jom.zip http://www.mirrorservice.org/sites/download.qt-project.org/official_releases/jom/jom_1_1_3.zip
 unzip -q jom.zip -d jom
 del jom.zip
@@ -38,31 +45,19 @@ git checkout 9f2a7bb1
 git apply ../patches/gyp.diff
 cd ..\..
 
-
-SET PATH=%cd%\ThirdParty\Strawberry\perl\bin;%cd%\ThirdParty\NASM\nasm-2.15.05;%cd%\ThirdParty\Python27;%cd%\ThirdParty\jom;%cd%\ThirdParty\cmake\bin;%cd%\ThirdParty\yasm;%cd%\ThirdParty\gyp;%cd%\ThirdParty\Ninja;%PATH%
-echo %PATH%
+SET PATH=%cd%\ThirdParty\Strawberry\perl\bin;%cd%\ThirdParty\NASM\nasm-2.15.05;%cd%\ThirdParty\Python27;%cd%\ThirdParty\jom;%cd%\ThirdParty\cmake\cmake-3.19.4-win64-x64\bin;%cd%\ThirdParty\yasm;%cd%\ThirdParty\gyp;%cd%\ThirdParty\Ninja;%PATH%
 
 cd Libraries
 SET LibrariesPath=%cd%
 
-SET GYP_MSVS_OVERRIDE_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise
+SET GYP_MSVS_OVERRIDE_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise
 SET GYP_MSVS_VERSION=2019
 
 git clone https://github.com/desktop-app/patches.git
 cd patches
 git checkout 10aeaf6
 cd ..
-git clone --branch 0.10.0 https://github.com/ericniebler/range-v3 range-v3
-
-
-copy ..\zlib.zip .
-unzip -q zlib.zip -d zlib
-dir zlib
-
-copy ..\lzma.zip .
-unzip -q lzma.zip -d lzma
-dir lzma
-
+git clone https://github.com/ericniebler/range-v3 range-v3
 
 git clone https://github.com/openssl/openssl.git openssl_1_1_1
 cd openssl_1_1_1
@@ -85,16 +80,45 @@ move libssl.lib out32
 move ossl_static.pdb out32
 cd ..
 
-copy ..\breakpad.zip .
-unzip -q breakpad.zip -d breakpad
-dir breakpad
+
+git clone https://github.com/desktop-app/zlib.git
+cd zlib\contrib\vstudio\vc14
+msbuild zlibstat.vcxproj /property:Configuration=Debug /p:PlatformToolset=v142
+msbuild zlibstat.vcxproj /property:Configuration=ReleaseWithoutAsm /p:PlatformToolset=v142
+cd ..\..\..\..
+
+
+git clone https://github.com/desktop-app/lzma.git
+cd lzma\C\Util\LzmaLib
+msbuild LzmaLib.sln /property:Configuration=Debug /p:PlatformToolset=v142
+msbuild LzmaLib.sln /property:Configuration=Release /p:PlatformToolset=v142
+cd ..\..\..\..
+
+
+git clone https://github.com/google/breakpad
+cd breakpad
+git checkout a1dbcdcb43
+git apply ../patches/breakpad.diff
+cd src
+git clone https://github.com/google/googletest testing
+cd client\windows
+call gyp --no-circular-check breakpad_client.gyp --format=ninja
+cd ..\..
+ninja -C out/Debug common crash_generation_client exception_handler
+ninja -C out/Release common crash_generation_client exception_handler
+cd tools\windows\dump_syms
+call gyp dump_syms.gyp
+msbuild dump_syms.vcxproj /property:Configuration=Debug /p:PlatformToolset=v142
+msbuild dump_syms.vcxproj /property:Configuration=Release /p:PlatformToolset=v142
+cd ..\..\..\..\..
+
 
 git clone git://code.qt.io/qt/qt5.git qt_5_12_8
 cd qt_5_12_8
 perl init-repository --module-subset=qtbase,qtimageformats
 git checkout v5.12.8
-git submodule update qtbase
-git submodule update qtimageformats
+git submodule update --init qtbase
+git submodule update --init qtimageformats
 
 
 call configure -prefix "%LibrariesPath%\Qt-5.12.8" -debug-and-release -force-debug-info -opensource -confirm-license -static -static-runtime -I "%LibrariesPath%\openssl_1_1_1\include" -no-opengl -openssl-linked OPENSSL_LIBS_DEBUG="%LibrariesPath%\openssl_1_1_1\out32.dbg\libssl.lib %LibrariesPath%\openssl_1_1_1\out32.dbg\libcrypto.lib Ws2_32.lib Gdi32.lib Advapi32.lib Crypt32.lib User32.lib" OPENSSL_LIBS_RELEASE="%LibrariesPath%\openssl_1_1_1\out32\libssl.lib %LibrariesPath%\openssl_1_1_1\out32\libcrypto.lib Ws2_32.lib Gdi32.lib Advapi32.lib Crypt32.lib User32.lib" -mp -nomake examples -nomake tests -platform win32-msvc
@@ -122,14 +146,21 @@ cmake --build . --target tonlib --config Release
 cd %LibrariesPath%\..
 git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
 
-cd wallet-desktop
-git submodule update --remote Wallet/lib_wallet
+cd wallet-desktop\Wallet
+
+cd lib_storage
+copy %root%\lib_storage.patch .
+git apply lib_storage.patch
 cd ..
 
-cd wallet-desktop\Wallet
-python --version
+cd ThirdParty\variant
+copy %root%\variant.patch .
+git apply variant.patch
+
+cd ..\..
+
 call configure.bat -D DESKTOP_APP_USE_PACKAGED=OFF
 cd ..\out
-msbuild Wallet.sln /property:Configuration=Release /p:platform=win32
+msbuild Wallet.sln /property:Configuration=Debug /p:platform=win32 /p:PlatformToolset=v142
 
-dir Release
+dir Debug
