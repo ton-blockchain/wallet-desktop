@@ -149,6 +149,8 @@ git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
 
 cd wallet-desktop\Wallet
 
+call configure.bat -D DESKTOP_APP_USE_PACKAGED=OFF
+
 cd lib_storage
 copy %root%\lib_storage.patch .
 git apply lib_storage.patch
@@ -160,7 +162,6 @@ git apply variant.patch
 
 cd ..\..
 
-call configure.bat -D DESKTOP_APP_USE_PACKAGED=OFF
 cd ..\out
 msbuild Wallet.sln /property:Configuration=Debug /p:platform=win32 /p:PlatformToolset=v142
 
