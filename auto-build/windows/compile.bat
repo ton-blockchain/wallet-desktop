@@ -84,15 +84,15 @@ cd ..
 
 git clone https://github.com/desktop-app/zlib.git
 cd zlib\contrib\vstudio\vc14
-msbuild zlibstat.vcxproj /property:Configuration=Debug /p:PlatformToolset=v142
-msbuild zlibstat.vcxproj /property:Configuration=ReleaseWithoutAsm /p:PlatformToolset=v142
+msbuild zlibstat.vcxproj /property:Configuration=Debug /p:PlatformToolset=v142 /p:platform=x86 /p:WindowsTargetPlatformVersion=10.0.19041.0
+msbuild zlibstat.vcxproj /property:Configuration=ReleaseWithoutAsm /p:PlatformToolset=v142 /p:platform=x86 /p:WindowsTargetPlatformVersion=10.0.19041.0
 cd ..\..\..\..
 
 
 git clone https://github.com/desktop-app/lzma.git
 cd lzma\C\Util\LzmaLib
-msbuild LzmaLib.sln /property:Configuration=Debug /p:PlatformToolset=v142
-msbuild LzmaLib.sln /property:Configuration=Release /p:PlatformToolset=v142
+msbuild LzmaLib.sln /property:Configuration=Debug /p:PlatformToolset=v142 /p:platform=x86 /p:WindowsTargetPlatformVersion=10.0.19041.0
+msbuild LzmaLib.sln /property:Configuration=Release /p:PlatformToolset=v142 /p:platform=x86 /p:WindowsTargetPlatformVersion=10.0.19041.0
 cd ..\..\..\..
 
 
@@ -109,8 +109,8 @@ ninja -C out/Debug common crash_generation_client exception_handler
 ninja -C out/Release common crash_generation_client exception_handler
 cd tools\windows\dump_syms
 call gyp dump_syms.gyp
-msbuild dump_syms.vcxproj /property:Configuration=Debug /p:PlatformToolset=v142
-msbuild dump_syms.vcxproj /property:Configuration=Release /p:PlatformToolset=v142
+msbuild dump_syms.vcxproj /property:Configuration=Debug /p:PlatformToolset=v142 /p:platform=x86 /p:WindowsTargetPlatformVersion=10.0.19041.0
+msbuild dump_syms.vcxproj /property:Configuration=Release /p:PlatformToolset=v142 /p:platform=x86 /p:WindowsTargetPlatformVersion=10.0.19041.0
 cd ..\..\..\..\..
 
 
@@ -138,6 +138,7 @@ mkdir build-debug
 cd build-debug
 cmake -A Win32 -DTON_USE_ROCKSDB=OFF -DTON_USE_ABSEIL=OFF -DTON_ARCH= -DTON_ONLY_TONLIB=ON -DOPENSSL_FOUND=1 -DOPENSSL_INCLUDE_DIR=%LibrariesPath%\openssl_1_1_1\include -DOPENSSL_CRYPTO_LIBRARY=%LibrariesPath%\openssl_1_1_1\out32.dbg\libcrypto.lib -DZLIB_FOUND=1 -DZLIB_INCLUDE_DIR=%LibrariesPath%\zlib -DZLIB_LIBRARY=%LibrariesPath%\zlib\contrib\vstudio\vc14\x86\ZlibStatDebug\zlibstat.lib -DCMAKE_CXX_FLAGS_DEBUG="/DZLIB_WINAPI /DNDEBUG /MTd /Zi /Od /Ob0" -DCMAKE_C_FLAGS_DEBUG="/DNDEBUG /MTd /Zi /Od /Ob0" -DCMAKE_EXE_LINKER_FLAGS="/SAFESEH:NO Ws2_32.lib Gdi32.lib Advapi32.lib Crypt32.lib User32.lib" ..
 cmake --build . --target tonlib --config Debug
+
 cd ..
 mkdir build
 cd build
@@ -160,9 +161,12 @@ cd ThirdParty\variant
 copy %root%\variant.patch .
 git apply variant.patch
 
-cd ..\..
+rem free up disc space, git actions windows server 2019 has 14GB limit
+rm -rf %root%\ThirdParty\Strawberry
+rm -rf %root%\Libraries\openssl_1_1_1\test
 
-cd ..\out
-msbuild Wallet.sln /property:Configuration=Debug /p:platform=win32 /p:PlatformToolset=v142
+cd %root%\wallet-desktop\out
+
+msbuild Wallet.sln /property:Configuration=Debug /p:platform=win32 /p:PlatformToolset=v142 /p:WindowsTargetPlatformVersion=10.0.19041.0 /p:Zc=preprocessor
 
 dir Debug
