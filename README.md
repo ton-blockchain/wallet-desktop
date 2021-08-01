@@ -1,6 +1,6 @@
-# [Test TON Wallet][ton_wallet] (Desktop)
+# [TON Wallet][ton_wallet] (Desktop)
 
-This is the source code and build instructions for a TON Testnet Wallet implementation for desktops.
+This is the source code and build instructions for a TON Wallet implementation for desktops.
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
 

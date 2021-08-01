@@ -41,3 +41,6 @@ stage
 /Linux/
 /Wallet/Makefile
 *.*~
+
+.idea
+cmake-build-debug
