@@ -82,7 +82,7 @@ Updater::InfoForRegistry GetInfoForRegistry() {
 		= result.updateLink
 		= "https://toncoin.org/wallets";
 	result.iconGroup = "TON Wallet";
-	result.publisher = "Telegram FZ-LLC";
+	result.publisher = "TON Foundation";
 	return result;
 }
 #endif // WALLET_AUTOUPDATING_BUILD
