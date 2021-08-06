@@ -122,7 +122,7 @@ cd ..
 
 LibrariesPath=`pwd`
 
-git clone https://github.com/newton-blockchain/ton.git
+git clone --single-branch --branch wallets https://github.com/newton-blockchain/ton.git
 cd ton
 git submodule init
 git submodule update third-party/crc32c

@@ -130,7 +130,7 @@ call jom -j4 install
 
 cd ..
 
-git clone --recursive https://github.com/newton-blockchain/ton.git
+git clone --single-branch --branch wallets --recursive https://github.com/newton-blockchain/ton.git
 cd ton
 git submodule init
 git submodule update third-party/crc32c
