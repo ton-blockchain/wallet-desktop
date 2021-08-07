@@ -1,4 +1,4 @@
-name: C/C++ CI Ubuntu 18.04 x86-64 Newton Desktop wallet compile
+name: C/C++ CI Ubuntu 18.04 x86-64 TON Desktop wallet compile
 
 on: [pull_request,workflow_dispatch]
 
@@ -23,5 +23,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
-          name: newton-linux-desktop-wallet
+          name: ton-linux-desktop-wallet
           path: artifacts
