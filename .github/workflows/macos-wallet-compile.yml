@@ -1,4 +1,4 @@
-name: C/C++ CI MacOS 10.15 Newton Desktop wallet compile
+name: C/C++ CI MacOS 10.15 TON Desktop wallet compile
 on: [pull_request,workflow_dispatch]
 jobs:
   build:
@@ -21,5 +21,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
-          name: newton-macos-desktop-wallet
+          name: ton-macos-desktop-wallet
           path: artifacts
