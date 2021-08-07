@@ -1,4 +1,4 @@
-name: C/C++ CI Windows Newton Desktop wallet compile
+name: C/C++ CI Windows TON Desktop wallet compile
 
 on: [pull_request,workflow_dispatch]
 
@@ -36,5 +36,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
-          name: newton-windows-desktop-wallet
+          name: ton-windows-desktop-wallet
           path: artifacts
