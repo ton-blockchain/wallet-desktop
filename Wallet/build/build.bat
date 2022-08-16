@@ -5,7 +5,7 @@ set "FullExecPath=%cd%"
 
 if not exist "%FullScriptPath%..\..\..\DesktopPrivate" (
   echo.
-  echo This script is for building the autoupdating version of Gram Wallet.
+  echo This script is for building the autoupdating version of TON Wallet.
   echo.
   echo For building custom versions please visit the build instructions page at:
   echo https://github.com/ton-blockchain/wallet-desktop/#build-instructions

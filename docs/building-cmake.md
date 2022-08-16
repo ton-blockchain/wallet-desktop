@@ -1,3 +1,9 @@
+## Build instructions for GYP/CMake under Ubuntu 18.04
+
+Please refer to auto-build script [compile.sh](../auto-build/ubuntu-18.04/compile.sh).
+
+For future references we left below the original instructions from ton-blockchain repository for Ubuntu 14.04.
+
 ## Build instructions for GYP/CMake under Ubuntu 14.04
 
 ### Prepare folder

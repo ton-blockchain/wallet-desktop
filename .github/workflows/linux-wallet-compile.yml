@@ -1,0 +1,27 @@
+name: C/C++ CI Ubuntu 18.04 x86-64 TON Desktop wallet compile
+
+on: [pull_request,workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps: 
+      - name: Check out current repository
+        uses: actions/checkout@v2   
+        with:
+          path: wallet-desktop
+      - name: Compile linux desktop wallet
+        run: |
+          cd wallet-desktop/auto-build/ubuntu-18.04
+          sudo chmod +x compile.sh
+          sudo ./compile.sh
+      - name: Find & copy binaries
+        run: |
+          mkdir artifacts
+          cp wallet-desktop/auto-build/ubuntu-18.04/wallet-desktop/out/Release/bin/Wallet artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: ton-linux-desktop-wallet
+          path: artifacts

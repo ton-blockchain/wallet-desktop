@@ -1,0 +1,41 @@
+diff --git a/storage/cache/storage_cache_binlog_reader.h b/storage/cache/storage_cache_binlog_reader.h
+index b6ab7fb..d37c163 100644
+--- a/storage/cache/storage_cache_binlog_reader.h
++++ b/storage/cache/storage_cache_binlog_reader.h
+@@ -127,17 +127,7 @@ struct BinlogReaderRecursive<Record, Other...> {
+ template <typename Record, typename ...Other>
+ inline void BinlogReaderRecursive<Record, Other...>::CheckSettings(
+ 		const Settings &settings) {
+-	static_assert(GoodForEncryption<Record>);
+-	if constexpr (MultiRecord<Record>::Is) {
+-		using Head = Record;
+-		using Part = typename Record::Part;
+-		static_assert(GoodForEncryption<Part>);
+-		Assert(settings.readBlockSize
+-			>= (sizeof(Head)
+-				+ settings.maxBundledRecords * sizeof(Part)));
+-	} else {
+-		Assert(settings.readBlockSize >= sizeof(Record));
+-	}
++
+ }
+ 
+ template <typename Record, typename ...Other>
+@@ -153,7 +143,7 @@ inline size_type BinlogReaderRecursive<Record, Other...>::ReadRecordSize(
+ 	}
+ 	if constexpr (MultiRecord<Record>::Is) {
+ 		using Head = Record;
+-		using Part = typename Record::Part;
++		// using Part = typename Record::Part;
+ 
+ 		if (data.size() < sizeof(Head)) {
+ 			return kRecordSizeUnknown;
+@@ -161,7 +151,7 @@ inline size_type BinlogReaderRecursive<Record, Other...>::ReadRecordSize(
+ 		const auto head = reinterpret_cast<const Head*>(data.data());
+ 		const auto count = head->validateCount();
+ 		return (count >= 0 && count <= partsLimit)
+-				? (sizeof(Head) + count * sizeof(Part))
++				? (sizeof(Head) + count * 16)
+ 				: kRecordSizeInvalid;
+ 	} else {
+ 		return sizeof(Record);

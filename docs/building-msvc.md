@@ -5,6 +5,10 @@
 - [Clone source code and prepare libraries](#clone-source-code-and-prepare-libraries)
 - [Build the project](#build-the-project)
 
+## Automatic build
+You can try an auto-build script [compile.bat](../auto-build/windows10/compile.bat).
+Launch **x86 Native Tools Command Prompt for VS 2019.bat** console and execute compile.bat.
+
 ## Prepare folder
 
 Choose an empty folder for the future build, for example **D:\\Projects**. It will be named ***BuildPath*** in the rest of this document. Create two folders there, ***BuildPath*\\ThirdParty** and ***BuildPath*\\Libraries**.
@@ -49,12 +53,13 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
 
     SET PATH=%cd%\ThirdParty\Strawberry\perl\bin;%cd%\ThirdParty\Python27;%cd%\ThirdParty\NASM;%cd%\ThirdParty\jom;%cd%\ThirdParty\cmake\bin;%cd%\ThirdParty\yasm;%PATH%
 
-    git clone --recursive https://github.com/ton-blockchain/wallet-desktop.git
+    git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
 
     mkdir Libraries
     cd Libraries
 
     SET LibrariesPath=%cd%
+    set GYP_MSVS_OVERRIDE_PATH=<Path to Program Files>\Microsoft Visual Studio\2019\Professional
 
     git clone https://github.com/desktop-app/patches.git
     cd patches
@@ -107,14 +112,16 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     cd tools\windows\dump_syms
     gyp dump_syms.gyp
     msbuild dump_syms.vcxproj /property:Configuration=Release
+    # If above command fails with error "fatal error C1083: Cannot open include file: 'dia2.h': No such file or directory"
+    # try to open dump_syms.vcxproj with Visual Studio 2019 and on start it will ask whether you want to Retarget Projects - click OK and reexecute the command.
     cd ..\..\..\..\..
 
     git clone git://code.qt.io/qt/qt5.git qt_5_12_8
     cd qt_5_12_8
     perl init-repository --module-subset=qtbase,qtimageformats
     git checkout v5.12.8
-    git submodule update qtbase
-    git submodule update qtimageformats
+    git submodule update --init qtbase
+    git submodule update --init qtimageformats
     cd qtbase
     git apply ../../patches/qtbase_5_12_8.diff
     cd ..
@@ -125,9 +132,8 @@ Open **x86 Native Tools Command Prompt for VS 2019.bat**, go to ***BuildPath*** 
     jom -j4 install
     cd ..
 
-    git clone https://github.com/ton-blockchain/ton.git
+    git clone https://github.com/newton-blockchain/ton.git
     cd ton
-    git checkout eecf05ca
     git submodule init
     git submodule update third-party/crc32c
     mkdir build-debug

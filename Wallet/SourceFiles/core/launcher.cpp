@@ -1,4 +1,4 @@
-// This file is part of Gram Wallet Desktop,
+// This file is part of TON Wallet Desktop,
 // a desktop application for the TON Blockchain project.
 //
 // For license and copyright information please follow this link:
@@ -75,14 +75,14 @@ char **FilteredCommandLineArguments::values() {
 #ifdef WALLET_AUTOUPDATING_BUILD
 Updater::InfoForRegistry GetInfoForRegistry() {
 	auto result = Updater::InfoForRegistry();
-	result.fullName = "Gram Wallet";
+	result.fullName = "TON Wallet";
 	result.guid = "5ED3C1CA-9AA7-4884-B01A-21D3A0CD0FB4";
 	result.helpLink
 		= result.supportLink
 		= result.updateLink
-		= "https://desktop.ton.org";
-	result.iconGroup = "Gram Wallet";
-	result.publisher = "Telegram FZ-LLC";
+		= "https://toncoin.org/wallets";
+	result.iconGroup = "TON Wallet";
+	result.publisher = "TON Foundation";
 	return result;
 }
 #endif // WALLET_AUTOUPDATING_BUILD
@@ -93,13 +93,13 @@ base::Platform::UrlSchemeDescriptor CustomSchemeDescriptor(
 	auto result = base::Platform::UrlSchemeDescriptor();
 	result.executable = base::Integration::Instance().executablePath();
 	result.protocol = "ton";
-	result.protocolName = "TON Gram Transfer Link";
-	result.shortAppName = "gramwallet";
+	result.protocolName = "TON coin Transfer Link";
+	result.shortAppName = "tonwallet";
 	result.desktopFileDir = launcher->workingPath();
-	result.desktopFileName = "gramwallet";
-	result.iconFileName = "gramwallet";
-	result.longAppName = "GramWallet";
-	result.displayAppName = "Gram Wallet";
+	result.desktopFileName = "tonwallet";
+	result.iconFileName = "tonwallet";
+	result.longAppName = "TONWallet";
+	result.displayAppName = "TON Wallet";
 	result.displayAppDescription = "Desktop wallet for TON";
 	result.forceUpdateIcon = updateIcon;
 	return result;
@@ -121,7 +121,7 @@ Launcher::Launcher(int argc, char *argv[])
 Launcher::~Launcher() = default;
 
 void Launcher::init() {
-	QApplication::setApplicationName("Gram Wallet");
+	QApplication::setApplicationName("TON Wallet");
 	initAppDataPath();
 	initWorkingPath();
 }

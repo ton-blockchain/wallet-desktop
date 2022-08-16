@@ -1,7 +1,7 @@
-#define MyAppShortName "Gram Wallet"
-#define MyAppName "Gram Wallet"
-#define MyAppPublisher "Telegram FZ-LLC"
-#define MyAppURL "https://desktop.ton.org"
+#define MyAppShortName "TON Wallet"
+#define MyAppName "TON Wallet"
+#define MyAppPublisher "TON Foundation"
+#define MyAppURL "https://ton.org/wallets"
 #define MyAppExeName "Wallet.exe"
 #define MyAppId "5ED3C1CA-9AA7-4884-B01A-21D3A0CD0FB4"
 

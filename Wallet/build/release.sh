@@ -11,7 +11,7 @@ Param4="$4"
 
 if [ ! -d "$FullScriptPath/../../../DesktopPrivate" ]; then
   echo ""
-  echo "This script is for building the offical version of Gram Wallet."
+  echo "This script is for building the offical version of TON Wallet."
   echo ""
   echo "For building custom versions please visit the build instructions page at:"
   echo "https://github.com/ton-blockchain/wallet-desktop/#build-instructions"
