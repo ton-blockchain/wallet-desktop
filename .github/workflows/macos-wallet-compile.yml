@@ -2,7 +2,7 @@ name: C/C++ CI MacOS 10.15 TON Desktop wallet compile
 on: [pull_request,workflow_dispatch]
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps: 
       - name: Check out current repository
         uses: actions/checkout@v2   
