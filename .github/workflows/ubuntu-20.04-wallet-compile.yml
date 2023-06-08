@@ -1,10 +1,10 @@
-name: C/C++ CI Ubuntu 18.04 x86-64 TON Desktop wallet compile
+name: C/C++ CI Ubuntu 20.04 x86-64 TON Desktop wallet compile
 
 on: [pull_request,workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps: 
       - name: Check out current repository
@@ -13,13 +13,13 @@ jobs:
           path: wallet-desktop
       - name: Compile linux desktop wallet
         run: |
-          cd wallet-desktop/auto-build/ubuntu-18.04
-          sudo chmod +x compile.sh
-          sudo ./compile.sh
+          cd wallet-desktop/auto-build/ubuntu-20.04
+          sudo chmod +x build-wallet.sh
+          sudo ./build-wallet.sh
       - name: Find & copy binaries
         run: |
           mkdir artifacts
-          cp wallet-desktop/auto-build/ubuntu-18.04/wallet-desktop/out/Release/bin/Wallet artifacts
+          cp wallet-desktop/auto-build/ubuntu-20.04/Wallet artifacts
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:

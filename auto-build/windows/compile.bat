@@ -146,7 +146,7 @@ cmake -A Win32 -DTON_USE_ROCKSDB=OFF -DTON_USE_ABSEIL=OFF -DTON_ARCH= -DTON_ONLY
 cmake --build . --target tonlib --config Release
 
 cd %LibrariesPath%\..
-git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
+git clone --recursive https://github.com/ton-blockchain/wallet-desktop.git
 
 cd wallet-desktop\Wallet
 
