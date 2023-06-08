@@ -10,7 +10,7 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
 rootPath=`pwd`
 
-git clone --recursive https://github.com/newton-blockchain/wallet-desktop.git
+git clone --recursive https://github.com/ton-blockchain/wallet-desktop.git
 
 cd wallet-desktop/Wallet/ThirdParty/rlottie
 git fetch
