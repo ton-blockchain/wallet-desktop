@@ -2,7 +2,7 @@
 
 MAKE_THREADS_CNT=-j16
 
-WALLET_REPO_ACCOUNT="newton-blockchain"
+WALLET_REPO_ACCOUNT="ton-blockchain"
 WALLET_BRANCH="master"
 
 TONLIB_REPO_ACCOUNT="newton-blockchain"
