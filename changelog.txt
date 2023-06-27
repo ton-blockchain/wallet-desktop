@@ -1,3 +1,7 @@
+0.9.9 (27.06.23)
+
+- Encrypted transaction comments.
+
 0.9.8 (30.04.20)
 
 - Copy wallet address to clipboard on click.
