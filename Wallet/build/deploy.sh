@@ -138,7 +138,7 @@ if [ "$DeployLinux32" == "1" ]; then
   Files+=("linux32/$Linux32UpdateFile" "linux32/$Linux32SetupFile")
 fi
 cd $DeployPath
-rsync -avR --progress ${Files[@]} "wallet:wallet-updates"
+rsync -avR --progress "${Files[@]}" "wallet:wallet-updates"
 
 echo "Version $AppVersionStrFull was deployed!"
 cd $FullExecPath
